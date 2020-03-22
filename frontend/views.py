@@ -6,6 +6,8 @@ import pandas as pd
 
 from django.views.generic import TemplateView
 
+from frontend.utils import plotlinechart
+
 
 class Home(TemplateView):
     template_name = "home.html"
