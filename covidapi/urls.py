@@ -16,7 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from frontend.views import update_graph
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('frontend.urls', namespace='frontend'))
+    path('', include('frontend.urls', namespace='frontend')),
+    path('update_bd/', update_graph, name='update')
 ]

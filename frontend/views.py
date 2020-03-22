@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 import pandas as pd
 
@@ -13,13 +14,16 @@ from frontend.utils import plotlinechart, curva_evolucao_confirmados, \
     plot_acumulo_progressao_confirmados, projecao_brasil, plot_projecao_brasil
 
 
+def update_graph(request):
+    update_database()
+    return HttpResponse('updated')
+
+
 class Home(TemplateView):
     template_name = "home.html"
 
     def get_context_data(self, **kwargs):
         context = super(Home, self).get_context_data(**kwargs)
-
-        # update_database()
 
         conf = ConfirmedData.objects.all().values()
         dead = DeadData.objects.all().values()
