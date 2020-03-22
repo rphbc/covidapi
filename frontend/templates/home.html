@@ -1,16 +1,33 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>COVID19 MONITOR</title>
+  <link rel="stylesheet" href="{% static 'styles/main.css' %}">
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
 
-{{ Brazil }}
+<div id="page-wrap">
+  <h1 align="center">
+    Report de casos de COVID19
+  </h1>
+  <p>
+    {{ chart_1|safe }}
+  </p>
 
 
-{{ chart|safe }}
+  <p>
+    {{ chart_2|safe }}
+  </p>
+  <p>
+    {{ chart_3|safe }}
+  </p>
+  <p>
+    {{ chart_4|safe }}
+  </p>
+</div>
 
 </body>
 </html>
