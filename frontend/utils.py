@@ -196,7 +196,7 @@ def plot_progressao_confirmados(dados_graf, dados_paises, plot_china=0):
 def acumulo_progressao_confirmados(base, lista_paises):
     base_analise = curva_evolucao_confirmados(base, lista_paises)
 
-    m = int((5 * round(base_analise['var_dates'].max() / 5)) / 5)
+    m = int((5 * round(base_analise['var_dates'].max() / 5)) / 5) + 1
 
     dias = [0] + list(range(5, (m * 5) + 1, 5))
 
