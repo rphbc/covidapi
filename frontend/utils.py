@@ -96,10 +96,12 @@ def plot_curva_evolucao_confirmados(dados_graf, dados_paises, plot_china=0):
                       title="Curva evolução das vítimas confirmadas",
     )
 
-    fig.update_xaxes(showline=True, linewidth=1, linecolor='rgb(128,128,128)',
+    fig.update_xaxes(title_text='# Dias desde a confirmação de 50 casos',
+                     showline=True, linewidth=1, linecolor='rgb(128,128,128)',
                      showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
-    fig.update_yaxes(showline=True, linewidth=1, linecolor='rgb(128,128,128)',
-                     showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
+    fig.update_yaxes(title_text='# casos (k)', showline=True, linewidth=1,
+                     linecolor='rgb(128,128,128)', showgrid=True, gridwidth=0.5,
+                     gridcolor='rgb(240,240,240)')
 
     chart = py.plot(
         fig,
@@ -177,9 +179,11 @@ def plot_progressao_confirmados(dados_graf, dados_paises, plot_china=0):
                       title="Curva de progressão das vítimas confirmadas",
                       )
 
-    fig.update_xaxes(showline=True, linewidth=1, linecolor='rgb(128,128,128)',
+    fig.update_xaxes(title_text='# Dias desde a confirmação de 50 casos',
+                     showline=True, linewidth=1, linecolor='rgb(128,128,128)',
                      showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
-    fig.update_yaxes(showline=True, linewidth=1, linecolor='rgb(128,128,128)',
+    fig.update_yaxes(title_text='# dias para dobrar número de casos',
+                     showline=True, linewidth=1, linecolor='rgb(128,128,128)',
                      showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
 
     chart = py.plot(
@@ -299,10 +303,13 @@ def plot_acumulo_progressao_confirmados(dados_graf, dados_paises, plot_china=0):
                             "confirmadas",
                       )
 
-    fig.update_xaxes(showline=True, linewidth=1, linecolor='rgb(128,128,128)',
+    fig.update_xaxes(title_text='# Dias desde a confirmação de 50 casos',
+                     showline=True, linewidth=1, linecolor='rgb(128,128,128)',
                      showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
-    fig.update_yaxes(showline=True, linewidth=1, linecolor='rgb(128,128,128)',
-                     showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
+    fig.update_yaxes(
+        title_text='Número de vezes em relação ao ponto 0, acumulado',
+        showline=True, linewidth=1, linecolor='rgb(128,128,128)', showgrid=True,
+        gridwidth=0.5, gridcolor='rgb(240,240,240)')
 
     chart = py.plot(
         fig,
@@ -413,10 +420,12 @@ def plot_projecao_brasil(dados_graf, dados_paises, plot_china=0):
                       title="Curva de projeção Brasil",
                       )
 
-    fig.update_xaxes(showline=True, linewidth=1, linecolor='rgb(128,128,128)',
+    fig.update_xaxes(title_text='# Dias desde a confirmação de 50 casos',
+                     showline=True, linewidth=1, linecolor='rgb(128,128,128)',
                      showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
-    fig.update_yaxes(showline=True, linewidth=1, linecolor='rgb(128,128,128)',
-                     showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
+    fig.update_yaxes(title_text='# casos (k)', showline=True, linewidth=1,
+                     linecolor='rgb(128,128,128)', showgrid=True, gridwidth=0.5,
+                     gridcolor='rgb(240,240,240)')
 
     chart = py.plot(
         fig,
