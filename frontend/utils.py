@@ -54,16 +54,16 @@ def curva_evolucao_confirmados(base,lista_paises):
 
 def plot_curva_evolucao_confirmados(dados_graf,dados_paises,plot_china=0):
     fig = go.Figure()
-    
+
     dados_graf = dados_graf.merge(dados_paises[['Country/Region','Order']].drop_duplicates(),on='Country/Region').sort_values(by=['Order','var_dates'])
-    
+
     dados_graf = dados_graf.loc[dados_graf['var_dates']<=dados_graf.loc[dados_graf['Country/Region']!='China','var_dates'].max()]
-    
+
     if plot_china==0:
         dados_graf = dados_graf.loc[~dados_graf['Country/Region'].isin(['China'])]
 
     for i in list(dados_graf['Country/Region'].unique()):
-        fig.add_trace(go.Scatter(x=list(dados_graf.loc[dados_graf['Country/Region']==i,'var_dates']), 
+        fig.add_trace(go.Scatter(x=list(dados_graf.loc[dados_graf['Country/Region']==i,'var_dates']),
                              y=list(dados_graf.loc[dados_graf['Country/Region']==i,'value']), name=i,mode='lines',line_shape='spline',
                              line=dict(color=dados_paises.loc[dados_paises['Country/Region']==i,'Color'].values[0],width=dados_paises.loc[dados_paises['Country/Region']==i,'Width'].values[0])))
 
@@ -79,11 +79,11 @@ def plot_curva_evolucao_confirmados(dados_graf,dados_paises,plot_china=0):
         include_plotlyjs=False,
         auto_open=False,
     )
-    
+
     return chart
 
 def progressao_confirmados(base,lista_paises):
-    
+
         base_analise = curva_evolucao_confirmados(base,lista_paises)
 
         base_agrega = pd.DataFrame()
@@ -111,14 +111,14 @@ def progressao_confirmados(base,lista_paises):
 
 def plot_progressao_confirmados(dados_graf,dados_paises,plot_china=0):
     fig = go.Figure()
-    
+
     dados_graf = dados_graf.merge(dados_paises[['Country/Region','Order']].drop_duplicates(),on='Country/Region').sort_values(by=['Order','var_dates'])
-    
+
     if plot_china==0:
         dados_graf = dados_graf.loc[~dados_graf['Country/Region'].isin(['China'])]
 
     for i in list(dados_graf['Country/Region'].unique()):
-        fig.add_trace(go.Scatter(x=list(dados_graf.loc[dados_graf['Country/Region']==i,'var_dates']), 
+        fig.add_trace(go.Scatter(x=list(dados_graf.loc[dados_graf['Country/Region']==i,'var_dates']),
                              y=list(dados_graf.loc[dados_graf['Country/Region']==i,'value']), name=i,mode='lines',line_shape='spline',
                              line=dict(color=dados_paises.loc[dados_paises['Country/Region']==i,'Color'].values[0],width=dados_paises.loc[dados_paises['Country/Region']==i,'Width'].values[0])))
 
@@ -134,7 +134,7 @@ def plot_progressao_confirmados(dados_graf,dados_paises,plot_china=0):
             include_plotlyjs=False,
             auto_open=False,
         )
-        
+
     return chart
 
 def acumulo_progressao_confirmados(base,lista_paises):
@@ -191,23 +191,23 @@ def acumulo_progressao_confirmados(base,lista_paises):
     base_analise_4 = pd.concat([base_analise_4,coloca_zero])
 
     base_analise_4 = base_analise_4.sort_values(by=['Country/Region','variable'])
-    
+
     base_analise_4.columns = ['Country/Region', 'var_dates', 'value']
-    
+
     return base_analise_4
 
 def plot_acumulo_progressao_confirmados(dados_graf,dados_paises,plot_china=0):
     fig = go.Figure()
-    
+
     dados_graf = dados_graf.merge(dados_paises[['Country/Region','Order']].drop_duplicates(),on='Country/Region').sort_values(by=['Order','var_dates'])
-    
+
     dados_graf = dados_graf.loc[dados_graf['var_dates']<=dados_graf.loc[dados_graf['Country/Region']!='China','var_dates'].max()]
-    
+
     if plot_china==0:
         dados_graf = dados_graf.loc[~dados_graf['Country/Region'].isin(['China'])]
 
     for i in list(dados_graf['Country/Region'].unique()):
-        fig.add_trace(go.Scatter(x=list(dados_graf.loc[dados_graf['Country/Region']==i,'var_dates']), 
+        fig.add_trace(go.Scatter(x=list(dados_graf.loc[dados_graf['Country/Region']==i,'var_dates']),
                              y=list(dados_graf.loc[dados_graf['Country/Region']==i,'value']), name=i,mode='lines',line_shape='spline',
                              line=dict(color=dados_paises.loc[dados_paises['Country/Region']==i,'Color'].values[0],width=dados_paises.loc[dados_paises['Country/Region']==i,'Width'].values[0])))
 
@@ -223,7 +223,7 @@ def plot_acumulo_progressao_confirmados(dados_graf,dados_paises,plot_china=0):
             include_plotlyjs=False,
             auto_open=False,
         )
-        
+
     return chart
 
 def projecao_brasil(base,lista_paises,lista_paises2):
@@ -265,25 +265,25 @@ def projecao_brasil(base,lista_paises,lista_paises2):
     aux_final.rename(columns={'value':'Brazil'},inplace=True)
 
     aux_final.loc[aux_final['var_dates']<lista_pontos[ponteiro-1],lista_paises2]= np.nan
-    
+
     aux_final = aux_final.melt(id_vars='var_dates')[['variable','var_dates','value']]
-    
+
     aux_final.rename(columns={'variable':'Country/Region'},inplace=True)
-    
+
     return aux_final
 
 def plot_projecao_brasil(dados_graf,dados_paises,plot_china=0):
     fig = go.Figure()
-    
+
     dados_graf = dados_graf.merge(dados_paises[['Country/Region','Order']].drop_duplicates(),on='Country/Region').sort_values(by=['Order','var_dates'])
-    
+
     dados_graf = dados_graf.loc[dados_graf['var_dates']<=dados_graf.loc[dados_graf['Country/Region']!='China','var_dates'].max()]
-    
+
     if plot_china==0:
         dados_graf = dados_graf.loc[~dados_graf['Country/Region'].isin(['China'])]
 
     for i in list(dados_graf['Country/Region'].unique()):
-        fig.add_trace(go.Scatter(x=list(dados_graf.loc[dados_graf['Country/Region']==i,'var_dates']), 
+        fig.add_trace(go.Scatter(x=list(dados_graf.loc[dados_graf['Country/Region']==i,'var_dates']),
                              y=list(dados_graf.loc[dados_graf['Country/Region']==i,'value']), name=i,mode='lines',line_shape='spline',
                              line=dict(color=dados_paises.loc[dados_paises['Country/Region']==i,'Color'].values[0],width=dados_paises.loc[dados_paises['Country/Region']==i,'Width'].values[0])))
 
@@ -299,5 +299,5 @@ def plot_projecao_brasil(dados_graf,dados_paises,plot_china=0):
             include_plotlyjs=False,
             auto_open=False,
         )
-        
+
     return chart

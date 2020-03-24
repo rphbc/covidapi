@@ -13,20 +13,43 @@
   <h1 align="center">
     Report de casos de COVID19
   </h1>
-  <p>
+
+
     {{ chart_1|safe }}
-  </p>
 
 
   <p>
+    O gráfico acima mostra a evolução dos casos confirmados para  diferentes
+  países a partir do dia em que atingiram 50 casos. Esta métrica é utilizada
+  para comparar as curvas na mesma janela de tempo
+  </p>
+
     {{ chart_2|safe }}
-  </p>
+
   <p>
+    O gráfico acima mostra a velocidade de progressão de contaminação para
+    diferentes países através da quantidade de dias necessários para dobrar o
+    número de casos. Esta métrica é observada ao longo do tempo e quanto
+    menor o valor, mais rápida é a contaminação
+  </p>
+
     {{ chart_3|safe }}
-  </p>
+
   <p>
-    {{ chart_4|safe }}
+    O gráfico acima mostra a velocidade de progressão de contaminação numa
+    visão acumulada a partir do momento 0. Assim, o número no eixo vertical
+    corresponde à taxa de multiplicação de casos num determinado período, em
+    relação ao ponto 0
   </p>
+
+    {{ chart_4|safe }}
+
+  <p>
+    O gráfico representa a projeção de casos para o Brasil caso ele seguisse
+    a progressão de contaminação de 3 países selecionados: Itália, China e
+    Coréia do Sul
+  </p>
+
 </div>
 
 </body>
