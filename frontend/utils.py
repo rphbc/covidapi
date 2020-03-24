@@ -93,7 +93,7 @@ def plot_curva_evolucao_confirmados(dados_graf, dados_paises, plot_china=0):
 
     fig.update_layout(yaxis_type="log", paper_bgcolor='rgba(0,0,0,0)',
                       plot_bgcolor='rgba(0,0,0,0)',
-                      title="Curva evolução das vítimas confirmadas",
+                      title="Curva evolução dos casos confirmados",
     )
 
     fig.update_xaxes(title_text='# Dias desde a confirmação de 50 casos',
@@ -176,7 +176,7 @@ def plot_progressao_confirmados(dados_graf, dados_paises, plot_china=0):
 
     fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
                       plot_bgcolor='rgba(0,0,0,0)',
-                      title="Curva de progressão das vítimas confirmadas",
+                      title="Curva de progressão dos casos confirmados",
                       )
 
     fig.update_xaxes(title_text='# Dias desde a confirmação de 50 casos',
@@ -299,8 +299,8 @@ def plot_acumulo_progressao_confirmados(dados_graf, dados_paises, plot_china=0):
 
     fig.update_layout(paper_bgcolor='rgba(0,0,0,0)',
                       plot_bgcolor='rgba(0,0,0,0)',
-                      title="Curva de acúmulo da progressão das vítimas "
-                            "confirmadas",
+                      title="Curva de acúmulo da progressão dos casos "
+                            "confirmados"
                       )
 
     fig.update_xaxes(title_text='# Dias desde a confirmação de 50 casos',
