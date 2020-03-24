@@ -67,7 +67,7 @@ def plot_curva_evolucao_confirmados(dados_graf,dados_paises,plot_china=0):
                              y=list(dados_graf.loc[dados_graf['Country/Region']==i,'value']), name=i,mode='lines',line_shape='spline',
                              line=dict(color=dados_paises.loc[dados_paises['Country/Region']==i,'Color'].values[0],width=dados_paises.loc[dados_paises['Country/Region']==i,'Width'].values[0])))
 
-    fig.update_layout(yaxis_type="log",paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+    fig.update_layout(yaxis_type="log",paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',title='Evolução de casos confirmados para países selecionados')
 
     fig.update_xaxes(title_text='# Dias desde a confirmação de 50 casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
     fig.update_yaxes(title_text='# casos (k)', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
@@ -122,7 +122,7 @@ def plot_progressao_confirmados(dados_graf,dados_paises,plot_china=0):
                              y=list(dados_graf.loc[dados_graf['Country/Region']==i,'value']), name=i,mode='lines',line_shape='spline',
                              line=dict(color=dados_paises.loc[dados_paises['Country/Region']==i,'Color'].values[0],width=dados_paises.loc[dados_paises['Country/Region']==i,'Width'].values[0])))
 
-    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', title='Variação da velocidade de progressão de contaminação para países selecionados')
 
     fig.update_xaxes(title_text='# Dias desde a confirmação de 50 casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
     fig.update_yaxes(title_text='# dias para dobrar número de casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
@@ -186,7 +186,7 @@ def acumulo_progressao_confirmados(base,lista_paises):
     coloca_zero = pd.DataFrame(data={'Country/Region':list(base_analise_4['Country/Region'].unique())})
 
     coloca_zero['variable'] = 0
-    coloca_zero['value'] = 0
+    coloca_zero['value'] = 1
 
     base_analise_4 = pd.concat([base_analise_4,coloca_zero])
 
@@ -211,7 +211,7 @@ def plot_acumulo_progressao_confirmados(dados_graf,dados_paises,plot_china=0):
                              y=list(dados_graf.loc[dados_graf['Country/Region']==i,'value']), name=i,mode='lines',line_shape='spline',
                              line=dict(color=dados_paises.loc[dados_paises['Country/Region']==i,'Color'].values[0],width=dados_paises.loc[dados_paises['Country/Region']==i,'Width'].values[0])))
 
-    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+    fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', title='Progressão acumulada de contaminação em relação ao ponto 0 para países selecionados')
 
     fig.update_xaxes(title_text='# Dias desde a confirmação de 50 casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
     fig.update_yaxes(title_text='Número de vezes em relação ao ponto 0, acumulado', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
@@ -287,7 +287,7 @@ def plot_projecao_brasil(dados_graf,dados_paises,plot_china=0):
                              y=list(dados_graf.loc[dados_graf['Country/Region']==i,'value']), name=i,mode='lines',line_shape='spline',
                              line=dict(color=dados_paises.loc[dados_paises['Country/Region']==i,'Color'].values[0],width=dados_paises.loc[dados_paises['Country/Region']==i,'Width'].values[0])))
 
-    fig.update_layout(yaxis_type="log", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
+    fig.update_layout(yaxis_type="log", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', title='Estimativa de casos Brasil com base na taxa de progressão da contaminação de outros países')
 
     fig.update_xaxes(title_text='# Dias desde a confirmação de 50 casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
     fig.update_yaxes(title_text='# casos (k)', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
