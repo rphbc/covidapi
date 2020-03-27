@@ -25,9 +25,9 @@ class CalculateOrder(Task):
 def update_database():
     url = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/'
     data_types = [
-        'time_series_19-covid-Confirmed.csv',
-        'time_series_19-covid-Deaths.csv',
-        'time_series_19-covid-Recovered.csv'
+        'time_series_covid19_confirmed_global.csv',
+        'time_series_covid19_deaths_global.csv',
+        'time_series_covid19_recovered_global.csv'
     ]
     columns = ['confirmed', 'deaths', 'recovered']
     urls = [url + endpoint for endpoint in data_types]
@@ -66,7 +66,7 @@ def update_database():
                 models.append(model)
 
         tables[key].objects.all().delete()
-        tables[key].objects.bulk_create(models, batch_size=100)
+        tables[key].objects.bulk_create(models, batch_size=500)
         logger.info('Dados atualizados no banco com sucesso')
 
 
