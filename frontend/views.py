@@ -82,3 +82,7 @@ class Home(TemplateView):
         })
 
         return context
+
+
+class Simulation(TemplateView):
+    template_name = "simulation.html"
