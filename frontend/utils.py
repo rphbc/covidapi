@@ -5,6 +5,15 @@ import plotly.figure_factory as ff
 import pandas as pd
 import numpy as np
 
+from sklearn.preprocessing import LabelEncoder
+
+from sklearn.ensemble import ExtraTreesClassifier
+
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+import openpyxl
+
 
 def plotlinechart(data_list, countries, plot_name):
     data_list.index = data_list.index.strftime("%Y-%m-%d")
@@ -25,6 +34,135 @@ def plotlinechart(data_list, countries, plot_name):
             connectgaps=True  # override default to connect the gaps
         ))
     fig.update_layout(yaxis_type="log")
+    chart = py.plot(
+        fig,
+        show_link=False,
+        output_type='div',
+        include_plotlyjs=False,
+        auto_open=False,
+    )
+
+    return chart
+
+def curva_log_confirmados_mundo(df_hist,lista_paises):
+
+    ################################################################################################
+    # upload csv
+    csv = 'full_data.csv'
+    df_hist = pd.read_csv(csv, sep=';|,')
+
+    # order data to ensure chronology
+    # df_hist.timestamp = pd.to_datetime(df_hist.timestamp)
+    df_hist = df_hist.sort_values(by=['country', 'timestamp'])
+    ################################################################################################
+
+    # create a column of acumulated cases
+    df_hist['acumulated'] = 0
+
+    # rename the 'count' column to "new_cases"
+    df_hist = df_hist.rename(columns={'count': 'new_cases'})
+
+    # reset index
+    df_hist = df_hist.reset_index()
+
+    # iterate to sum acumulated cases
+    for index, row in df_hist.iterrows():
+
+        if index != 0:
+            if df_hist.iloc[index - 1]['country'] == df_hist.iloc[index]['country']:
+                df_hist.at[index, 'acumulated'] = df_hist.iloc[index - 1]['acumulated'] + df_hist.iloc[index - 1][
+                    'new_cases']
+            else:
+                print("")
+
+    return df_hist
+
+
+def plot_curva_log_confirmados_mundo(df_hist, lista_paises):
+
+    fig = go.Figure()
+
+    fig.add_trace(go.Scatter(name="Brazil",x=df_hist.groupby('country').get_group('Brazil')['acumulated'],y=df_hist.groupby('country').get_group('Brazil')['new_cases']))
+    fig.add_trace(go.Scatter(name="France",x=df_hist.groupby('country').get_group('France')['acumulated'],y=df_hist.groupby('country').get_group('France')['new_cases']))
+    fig.add_trace(go.Scatter(name="Italy",x=df_hist.groupby('country').get_group('Italy')['acumulated'],y=df_hist.groupby('country').get_group('Italy')['new_cases']))
+    fig.add_trace(go.Scatter(name="China",x=df_hist.groupby('country').get_group('China')['acumulated'],y=df_hist.groupby('country').get_group('China')['new_cases']))
+    fig.add_trace(go.Scatter(name="United States",x=df_hist.groupby('country').get_group('United States')['acumulated'],y=df_hist.groupby('country').get_group('United States')['new_cases']))
+    fig.add_trace(go.Scatter(name="South Korea",x=df_hist.groupby('country').get_group('South Korea')['acumulated'],y=df_hist.groupby('country').get_group('South Korea')['new_cases']))
+    fig.add_trace(go.Scatter(name="Japan",x=df_hist.groupby('country').get_group('Japan')['acumulated'],y=df_hist.groupby('country').get_group('Japan')['new_cases']))
+    fig.add_trace(go.Scatter(name="Spain",x=df_hist.groupby('country').get_group('Spain')['acumulated'],y=df_hist.groupby('country').get_group('Spain')['new_cases']))
+    fig.add_trace(go.Scatter(name="United Kingdom",x=df_hist.groupby('country').get_group('United Kingdom')['acumulated'],y=df_hist.groupby('country').get_group('United Kingdom')['new_cases']))
+
+    fig.update_layout(yaxis_type="log", xaxis_type="log", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',title='Casos totais x casos novos BR')
+
+    fig.update_xaxes(title_text='novos casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
+    fig.update_yaxes(title_text='total de casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
+
+    chart = py.plot(
+        fig,
+        show_link=False,
+        output_type='div',
+        include_plotlyjs=False,
+        auto_open=False,
+    )
+
+    return chart
+
+
+def curva_log_confirmados_brasil(df_hist, lista_estados):
+
+
+    ################################################################################################
+    # upload csv
+    csv = 'covid_br_state.csv'
+    df_hist = pd.read_csv(csv, sep=';|,')
+
+    # order data to ensure chronology
+    df_hist.timestamp = pd.to_datetime(df_hist.timestamp)
+    df_hist = df_hist.sort_values(by=['country', 'timestamp'])
+    ################################################################################################
+
+    # create a column of acumulated cases
+    df_hist['new_cases'] = 0
+
+    # rename the 'count' column to "new_cases"
+    df_hist = df_hist.rename(columns={'count': 'acumulated'})
+
+    # reset index
+    df_hist = df_hist.reset_index()
+
+    # iterate to sum acumulated cases
+    for index, row in df_hist.iterrows():
+
+        if index != 0:
+            if df_hist.iloc[index - 1]['country'] == df_hist.iloc[index]['country']:
+                df_hist.at[index, 'new_cases'] = df_hist.iloc[index]['acumulated'] - df_hist.iloc[index - 1][
+                    'acumulated']
+            else:
+                print("")
+
+    # print dos nomes dos grupos
+    print(df_hist.groupby('country').groups.keys())
+
+    return df_hist
+
+
+def plot_curva_log_confirmados_brasil(df_hist, lista_estados):
+
+    fig = go.Figure()
+
+    # fig.add_trace(go.Scatter(name="SP",x=df_hist.groupby('country').get_group('SP')['acumulated'],y=df_hist.groupby('country').get_group('SP')['new_cases']))
+    # fig.add_trace(go.Scatter(name="RJ",x=df_hist.groupby('country').get_group('RJ')['acumulated'],y=df_hist.groupby('country').get_group('RJ')['new_cases']))
+    # fig.add_trace(go.Scatter(name="DF",x=df_hist.groupby('country').get_group('DF')['acumulated'],y=df_hist.groupby('country').get_group('DF')['new_cases']))
+
+    for i in list(df_hist['country'].unique()):
+        fig.add_trace(go.Scatter(x=list(df_hist.loc[df_hist['country']==i,'acumulated']),
+                             y=list(df_hist.loc[df_hist['country']==i,'new_cases']), name=i,mode='lines'))
+
+    fig.update_layout(yaxis_type="log", xaxis_type="log", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',title='Casos totais x casos novos BR')
+
+    fig.update_xaxes(title_text='novos casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
+    fig.update_yaxes(title_text='total de casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
+
     chart = py.plot(
         fig,
         show_link=False,
@@ -301,3 +439,344 @@ def plot_projecao_brasil(dados_graf,dados_paises,plot_china=0):
         )
 
     return chart
+
+class MultiColumnLabelEncoder:
+
+    def __init__(self, columns=None):
+        self.columns = columns  # list of column to encode
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        '''
+        Transforms columns of X specified in self.columns using
+        LabelEncoder(). If no columns specified, transforms all
+        columns in X.
+        '''
+
+        output = X.copy()
+        #         if self.columns.dtype != 'float64':
+
+        if self.columns is not None:
+            for col in self.columns:
+                output[col] = LabelEncoder().fit_transform(output[col])
+        else:
+            for colname, col in output.iteritems():
+                if output[colname].dtype != 'float64' and output[colname].dtype != 'datetime64[ns]':
+                    output[colname] = LabelEncoder().fit_transform(col)
+
+        return output
+
+    def fit_transform2(self, X, y=None):
+        return self.fit(X, y).transform(X)
+
+def trata_base_Einstein(df):
+
+    ##################################################################################3
+    # upload da planilha
+    excel_file = 'dataset.xlsx'
+
+    # dataframe completo
+    df = pd.read_excel(excel_file, sheet_name="All")
+    ##################################################################################3
+
+    df1 = df
+
+    # checa se existem strings e numeros misturados
+    for column in df1:
+        a = list(df1[column].map(type) != str)
+        if (len(set(a)) != 1):
+            # converte colunas mistas para tipo string
+            df1[column] = df1[column].apply(str)
+
+    # checa se deu tudo certo
+    for column in df1:
+        a = list(df1[column].map(type) != str)
+        if (len(set(a)) != 1):
+            print("valores mistos remanescentes em: " + column)
+
+    ### como, neste caso, o timestamp não importa, pode-se preencher com qualquer valor sequencial ###
+
+    # pega a quantidade de linhas
+    qtde_linhas = len(df1.index)
+    # cria uma coluna de Timestamps sequenciais na primeira posição
+    df1.insert(0, "Timestamp", pd.date_range(start='1/1/2020', periods=qtde_linhas, freq='H'))
+
+    # pega o nome das colunas
+    colunas = list(df1)
+
+    # remove colunas que não possuem nenhum dado
+    df1 = df1.dropna(axis=1, how='all')
+
+    # remove linhas sem exames sanguíneos (vi que quem não fez a de Hematocrit, não fez mais nenhum)
+    df1 = df1[df1['Hematocrit'].notna()]
+
+    # preenche espaços vazios restantes (NaN) com zeros
+    df1 = df1.fillna(0)
+
+    # transformando dados categóricos em números - exemplo: [normal,ausente,presente] viram [0,1,2]
+    le = MultiColumnLabelEncoder()
+    df1 = le.fit_transform2(df1)
+
+    # definindo colunas de saida e transformando em números (neg=0 e pos=1)
+    lista_out = ['Timestamp', 'SARS-Cov-2 exam result', 'Patient addmited to regular ward (1=yes, 0=no)',
+                 'Patient addmited to semi-intensive unit (1=yes, 0=no)',
+                 'Patient addmited to intensive care unit (1=yes, 0=no)']
+    df_out = df1[lista_out]
+    # df_out = df_out.replace(['negative','positive'],[0,1])
+    lista_out.remove('Timestamp')
+
+    # removendo colunas que não serão úteis para a análise e também a coluna de saída
+    lista_drop = lista_out
+    lista_drop.append('Patient ID')
+    df1 = df1.drop(lista_drop, axis=1)
+    colunas = list(df1)
+
+    # cria o dataframe que virará o xls para subir no B-Zek
+    # salva em uma nova planilha de resultados
+    writer = pd.ExcelWriter('base_relevance.xlsx', engine='openpyxl')
+    df1.to_excel(writer, sheet_name="INPUTS")
+    df_out.to_excel(writer, sheet_name="OUTPUTS")
+    writer.save()
+
+    response = {
+        'inputs':df1,
+        'outputs':df_out
+    }
+
+    return response
+
+def feature_importance_Einstein(base):
+
+    df1 = base['inputs']
+    df_out = base['outputs']
+
+    try:
+        df_out = df_out.drop(columns=['Timestamp'])
+        df1 = df1.drop(columns=['Timestamp'])
+    except:
+        pass
+
+    # Encontra as variáveis mais relevante para a incidência de COVID-19
+    model = ExtraTreesClassifier()
+    model.fit(df1, df_out)
+
+    lista_importances = pd.DataFrame([model.feature_importances_])
+    lista_importances.columns = list(df1.columns)
+    lista_importances = lista_importances * 100
+
+    lista_importances = lista_importances.sort_values(by=0, axis=1, ascending=False)
+
+    top15 = list(lista_importances.columns[0:15])
+    top15_values = []
+    print("Variáveis mais impactantes:")
+    for l in lista_importances.columns[0:15]:
+        print("Nome: " + str(l) + " - " + str(lista_importances[l][0]) + " %")
+        top15_values.append(lista_importances[l][0])
+    print(top15)
+
+    # cria dataset para predição
+    df_in = df1[top15]
+    df_out = df_out
+
+    # pega a lista das variáveis mais relevantes e cria outra planilha para a rede neural
+    lista_neural_in = df_in
+    lista_neural_out = df_out
+
+    ### como, neste caso, o timestamp não importa, pode-se preencher com qualquer valor sequencial ###
+    # pega a quantidade de linhas
+    qtde_linhas = len(lista_neural_in.index)
+    # cria uma coluna de Timestamps sequenciais na primeira posição
+    lista_neural_in.insert(0, "Timestamp", pd.date_range(start='1/1/2020', periods=qtde_linhas, freq='H'))
+    lista_neural_out.insert(0, "Timestamp", pd.date_range(start='1/1/2020', periods=qtde_linhas, freq='H'))
+
+    df2_in = lista_neural_in.copy()
+    df2_out = lista_neural_out.copy()
+    writer = pd.ExcelWriter('base_simulate.xlsx', engine='openpyxl')
+    lista_neural_in.to_excel(writer, sheet_name="INPUTS")
+    lista_neural_out.to_excel(writer, sheet_name="OUTPUTS")
+    writer.save()
+
+    top15_aws = zip(top15, top15_values)
+
+    response = {
+        'top15' : top15_aws,
+        'top15_names' : top15,
+        'df_in' : df2_in,
+        'df_out': df2_out,
+        'model' : model.get_params(),
+    }
+
+    return response
+
+def predict_Einstein(base):
+
+    df_in = base['df_in']
+    df_out = base['df_out']
+
+
+    y = df_out['SARS-Cov-2 exam result']
+    x = df_in.drop(['Timestamp'], axis=1)
+
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=27)
+
+    clf = MLPClassifier(hidden_layer_sizes=(100, 100, 100), max_iter=2500, alpha=0.0001,
+                        solver='lbfgs', verbose=10, random_state=21, tol=0.000000001)
+
+    clf.fit(x_train, y_train)
+    y_pred = clf.predict(x_test)
+
+    acc = accuracy_score(y_test, y_pred)
+    acc = acc * 100
+    acc = "{:.2f}".format(acc)
+    print("teste finalizado")
+    print("Acurácia = " + str(acc) + "%")
+
+
+    ######################################### ESSA PARTE EU PRECISO FAZER POR JQUERY ###############
+
+    # print("digite os numeros em sequência:")
+    # lista_user = []
+    #
+    # for l in range(15):
+    #     print("item " + str(l + 1) + "de 15")
+    #     ele = input("Digite a quantidade de: " + str(x.columns[l]))
+    #     lista_user.append(ele)
+    # print("sua seleção:")
+
+    # lista_user = [lista_user]
+    # lista_predict = pd.DataFrame(lista_user)
+    # lista_predict.columns = list(x.columns)
+    # print(lista_predict)
+    #
+    # y_pred = clf.predict(lista_predict)
+    # if y_pred == 0:
+    #     result = 'NEGATIVO'
+    # else:
+    #     result = 'POSITIVO'
+    #
+    # print("********************************************************")
+    # print("Resultado: " + result)
+    # print("********************************************************")
+
+    ################################################################################################
+
+    # teste negativo
+    lista_neg = [[-1.73367476463318, -1.77359390258789, 0.609156608581543, 17, 1.38181185722351,
+                  -3.31828498840332, -3.2425479888916, -0.582671403884888, -2.77920341491699,
+                  -0.448159873485565, 0.470262199640274, -0.550289511680603, 2.24012660980225,
+                  2.05995225906372, 0]]
+
+    lista_user = lista_neg
+    lista_predict = pd.DataFrame(lista_user)
+    lista_predict.columns = list(x.columns)
+    print(lista_predict)
+
+    y_pred = clf.predict(lista_predict)
+    if y_pred == 0:
+        result_neg = 'NEGATIVO'
+    else:
+        result_neg = 'POSITIVO'
+
+    print("Resultado: " + result_neg)
+
+    # teste positivo
+    lista_pos = [[-1.28842806816101, -0.906829118728638, -0.503570020198822, 19, 0.567652404308319,
+                  0.578023791313171, 0.69428688287735, -0.835507690906525, 0.541563928127289, -0.182790279388428,
+                  -0.735871851444244, -0.325903296470642, 0.453725010156632, -0.135454878211021,
+                  0.420203506946564]]
+
+    lista_user = lista_pos
+    lista_predict = pd.DataFrame(lista_user)
+    lista_predict.columns = list(x.columns)
+    print(lista_predict)
+
+    y_pred = clf.predict(lista_predict)
+    if y_pred == 0:
+        result_pos = 'NEGATIVO'
+    else:
+        result_pos = 'POSITIVO'
+
+    print("Resultado: " + result_pos)
+
+    params = clf.get_params()
+
+    response = {
+        'acuracia' : acc,
+        'dados_neg'  : lista_neg,
+        'result_neg' : result_neg,
+        'dados_pos'  : lista_pos,
+        'result_pos' : result_pos,
+        'param_mlpc' : params,
+
+    }
+
+    return response
+
+def predict_Einstein2(base,lista_pred):
+
+    df_in = base['df_in']
+    df_out = base['df_out']
+
+
+    y = df_out['SARS-Cov-2 exam result']
+    x = df_in.drop(['Timestamp'], axis=1)
+
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=27)
+
+    clf = MLPClassifier(hidden_layer_sizes=(100, 100, 100), max_iter=2500, alpha=0.0001,
+                        solver='lbfgs', verbose=10, random_state=21, tol=0.000000001)
+
+    clf.fit(x_train, y_train)
+    y_pred = clf.predict(x_test)
+
+    acc = accuracy_score(y_test, y_pred)
+    acc = acc * 100
+    acc = "{:.2f}".format(acc)
+    print("teste finalizado")
+    print("Acurácia = " + str(acc) + "%")
+
+
+    ######################################### ESSA PARTE EU PRECISO FAZER POR JQUERY ###############
+
+    print("digite os numeros em sequência:")
+    lista_user = lista_pred
+
+    lista_user = [lista_user]
+    lista_predict = pd.DataFrame(lista_user)
+    lista_predict.columns = list(x.columns)
+    print(lista_predict)
+
+    y_pred = clf.predict(lista_predict)
+    if y_pred == 0:
+        result = 'NEGATIVO'
+    else:
+        result = 'POSITIVO'
+
+    print("********************************************************")
+    print("Resultado: " + result)
+    print("********************************************************")
+
+    ################################################################################################
+
+
+    params = clf.get_params()
+
+    response = {
+        'acuracia' : acc,
+        'result' : result,
+        'param_mlpc' : params
+    }
+
+    return response
+
+
+class FloatConverter:
+    regex = '[\d\.\d\d]+'
+
+    def to_python(self, value):
+        return float(value)
+
+    def to_url(self, value):
+        return '{}'.format(value)

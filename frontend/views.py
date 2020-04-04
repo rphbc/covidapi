@@ -1,8 +1,9 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 import pandas as pd
 
 # Create your views here.
+from django.urls import reverse
 
 from django.views.generic import TemplateView
 
@@ -11,8 +12,12 @@ from api.tasks import update_database
 from frontend.utils import plotlinechart, curva_evolucao_confirmados, \
     plot_curva_evolucao_confirmados, progressao_confirmados, \
     plot_progressao_confirmados, acumulo_progressao_confirmados, \
-    plot_acumulo_progressao_confirmados, projecao_brasil, plot_projecao_brasil
+    plot_acumulo_progressao_confirmados, projecao_brasil, plot_projecao_brasil, \
+    plot_curva_log_confirmados_brasil, curva_log_confirmados_mundo, \
+    plot_curva_log_confirmados_mundo, curva_log_confirmados_brasil, trata_base_Einstein, \
+    feature_importance_Einstein, predict_Einstein, predict_Einstein2
 
+from .forms import NameForm
 
 def update_graph(request):
     update_database()
@@ -74,11 +79,21 @@ class Home(TemplateView):
 
         plot_4 = plot_projecao_brasil(dados_graf_4, dados_paises, 1)
 
+        df_plot5 = curva_log_confirmados_mundo(0,0)
+
+        plot_5 = plot_curva_log_confirmados_mundo(df_plot5,0)
+
+        df_plot6 = curva_log_confirmados_brasil(0,0)
+
+        plot_6 = plot_curva_log_confirmados_brasil(df_plot6,0)
+
         context.update({
             'chart_1': plot_1,
             'chart_2': plot_2,
             'chart_3': plot_3,
             'chart_4': plot_4,
+            'chart_5': plot_5,
+            'chart_6': plot_6
         })
 
         return context
@@ -86,3 +101,70 @@ class Home(TemplateView):
 
 class Simulation(TemplateView):
     template_name = "simulation.html"
+
+class Diagnose(TemplateView):
+    template_name = "diagnose.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(Diagnose, self).get_context_data(**kwargs)
+
+        base = trata_base_Einstein(0)
+
+        ft_import = feature_importance_Einstein(base)
+
+        pred = predict_Einstein(ft_import)
+
+
+        context.update({
+            'top15': ft_import['top15'],
+            'acuracia': pred['acuracia'],
+            'modelo_ft_import': ft_import['model'],
+            'modelo_mlpc': pred['param_mlpc'],
+            'dados_neg': pred['dados_neg'],
+            'result_neg': pred['result_neg'],
+            'dados_pos': pred['dados_pos'],
+            'result_pos': pred['result_pos'],
+            'top15_names': ft_import['top15_names'],
+        })
+
+        return context
+
+def vote(request):
+    if request.method == "POST":
+        print(request.POST)
+        question = request.POST.get('question_id',999)
+        question2 = request.POST.get('question_id2', 999)
+    return HttpResponseRedirect(reverse('frontend:result_vote',args=[question,question2]))
+
+def result_vote(request, question_id, question_id2):
+
+    result = int(question_id) + int(question_id2)
+    return HttpResponse(str(question_id)+"  "+str(question_id2)+"   "+str(result))
+
+def predict(request):
+    if request.method == "POST":
+        print(request.POST)
+        lista_pred=[]
+        for i in range(15):
+            lista_pred.append(request.POST.get('question_id'+str(i+1),999))
+    return HttpResponseRedirect(reverse('frontend:result_predict',args=[lista_pred[0],lista_pred[1],lista_pred[2],
+                                                                        lista_pred[3],lista_pred[4],lista_pred[5],
+                                                                        lista_pred[6],lista_pred[7],lista_pred[8],
+                                                                        lista_pred[9],lista_pred[10],lista_pred[11],
+                                                                        lista_pred[12],lista_pred[13],lista_pred[14]]))
+
+def result_predict(request,question_id1,question_id2,question_id3,question_id4,question_id5,
+                   question_id6,question_id7,question_id8,question_id9,question_id10,
+                   question_id11,question_id12,question_id13,question_id14,question_id15):
+
+    lista_pred=[question_id1,question_id2,question_id3,question_id4,question_id5,question_id6,question_id7,
+                question_id8,question_id9,question_id10,question_id11,question_id12,question_id13,
+                question_id14,question_id15]
+
+    base = trata_base_Einstein(0)
+
+    ft_import = feature_importance_Einstein(base)
+
+    pred = predict_Einstein2(ft_import,lista_pred)
+
+    return HttpResponse("Seu resultado é: "+str(pred['result']+" com uma precisão de: "+str(pred['acuracia'])+"%"))
