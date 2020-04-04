@@ -167,4 +167,8 @@ def result_predict(request,question_id1,question_id2,question_id3,question_id4,q
 
     pred = predict_Einstein2(ft_import,lista_pred)
 
-    return HttpResponse("Seu resultado é: "+str(pred['result']+" com uma precisão de: "+str(pred['acuracia'])+"%"))
+    return HttpResponse("Seu resultado é: <strong>"+str(pred['result'])+"</strong><br>com uma precisão de: <strong>"+
+                        str(pred['acuracia'])+"%</strong><br><br>Teste positivo = "+str(pred['result_pos'])+
+                        "<br>Teste negativo = "+str(pred['result_neg'])+
+                        "<br><br>Se os testes acima não derem POSITIVO e NEGATIVO, respectivamente, pressione "+
+                        "<strong>f5</strong> para um novo treinamento da rede neural.")

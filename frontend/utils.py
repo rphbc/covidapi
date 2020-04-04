@@ -633,40 +633,10 @@ def predict_Einstein(base):
     print("teste finalizado")
     print("Acurácia = " + str(acc) + "%")
 
-
-    ######################################### ESSA PARTE EU PRECISO FAZER POR JQUERY ###############
-
-    # print("digite os numeros em sequência:")
-    # lista_user = []
-    #
-    # for l in range(15):
-    #     print("item " + str(l + 1) + "de 15")
-    #     ele = input("Digite a quantidade de: " + str(x.columns[l]))
-    #     lista_user.append(ele)
-    # print("sua seleção:")
-
-    # lista_user = [lista_user]
-    # lista_predict = pd.DataFrame(lista_user)
-    # lista_predict.columns = list(x.columns)
-    # print(lista_predict)
-    #
-    # y_pred = clf.predict(lista_predict)
-    # if y_pred == 0:
-    #     result = 'NEGATIVO'
-    # else:
-    #     result = 'POSITIVO'
-    #
-    # print("********************************************************")
-    # print("Resultado: " + result)
-    # print("********************************************************")
-
-    ################################################################################################
-
     # teste negativo
-    lista_neg = [[-1.73367476463318, -1.77359390258789, 0.609156608581543, 17, 1.38181185722351,
-                  -3.31828498840332, -3.2425479888916, -0.582671403884888, -2.77920341491699,
-                  -0.448159873485565, 0.470262199640274, -0.550289511680603, 2.24012660980225,
-                  2.05995225906372, 0]]
+    lista_neg = [[-1.73367476463318,-1.77359390258789,0.609156608581543,1.38181185722351,17,
+                  -3.2425479888916,-0.582671403884888,-0.448159873485565,-3.31828498840332,-1.83095347881317,
+                  0.470262199640274,-2.77920341491699,1.55254781246185,0,2.05995225906372]]
 
     lista_user = lista_neg
     lista_predict = pd.DataFrame(lista_user)
@@ -682,10 +652,9 @@ def predict_Einstein(base):
     print("Resultado: " + result_neg)
 
     # teste positivo
-    lista_pos = [[-1.28842806816101, -0.906829118728638, -0.503570020198822, 19, 0.567652404308319,
-                  0.578023791313171, 0.69428688287735, -0.835507690906525, 0.541563928127289, -0.182790279388428,
-                  -0.735871851444244, -0.325903296470642, 0.453725010156632, -0.135454878211021,
-                  0.420203506946564]]
+    lista_pos = [[-1.28842806816101,-0.906829118728638,-0.503570020198822,0.567652404308319,19,
+                  0.69428688287735,-0.835507690906525,-0.182790279388428,0.578023791313171,-0.295725524425507,
+                  -0.735871851444244,0.541563928127289,0.38068476319313,0.420203506946564,-0.135454878211021]]
 
     lista_user = lista_pos
     lista_predict = pd.DataFrame(lista_user)
@@ -737,9 +706,6 @@ def predict_Einstein2(base,lista_pred):
     print("teste finalizado")
     print("Acurácia = " + str(acc) + "%")
 
-
-    ######################################### ESSA PARTE EU PRECISO FAZER POR JQUERY ###############
-
     print("digite os numeros em sequência:")
     lista_user = lista_pred
 
@@ -758,7 +724,41 @@ def predict_Einstein2(base,lista_pred):
     print("Resultado: " + result)
     print("********************************************************")
 
-    ################################################################################################
+    # teste negativo
+    lista_neg = [[-1.73367476463318,-1.77359390258789,0.609156608581543,1.38181185722351,17,
+                  -3.2425479888916,-0.582671403884888,-0.448159873485565,-3.31828498840332,-1.83095347881317,
+                  0.470262199640274,-2.77920341491699,1.55254781246185,0,2.05995225906372]]
+
+    lista_user = lista_neg
+    lista_predict = pd.DataFrame(lista_user)
+    lista_predict.columns = list(x.columns)
+    print(lista_predict)
+
+    y_pred = clf.predict(lista_predict)
+    if y_pred == 0:
+        result_neg = 'NEGATIVO'
+    else:
+        result_neg = 'POSITIVO'
+
+    print("Resultado: " + result_neg)
+
+    # teste positivo
+    lista_pos = [[-1.28842806816101,-0.906829118728638,-0.503570020198822,0.567652404308319,19,
+                  0.69428688287735,-0.835507690906525,-0.182790279388428,0.578023791313171,-0.295725524425507,
+                  -0.735871851444244,0.541563928127289,0.38068476319313,0.420203506946564,-0.135454878211021]]
+
+    lista_user = lista_pos
+    lista_predict = pd.DataFrame(lista_user)
+    lista_predict.columns = list(x.columns)
+    print(lista_predict)
+
+    y_pred = clf.predict(lista_predict)
+    if y_pred == 0:
+        result_pos = 'NEGATIVO'
+    else:
+        result_pos = 'POSITIVO'
+
+    print("Resultado: " + result_pos)
 
 
     params = clf.get_params()
@@ -766,14 +766,16 @@ def predict_Einstein2(base,lista_pred):
     response = {
         'acuracia' : acc,
         'result' : result,
-        'param_mlpc' : params
+        'param_mlpc' : params,
+        'result_pos': result_pos,
+        'result_neg': result_neg
     }
 
     return response
 
 
 class FloatConverter:
-    regex = '[\d\.\d\d]+'
+    regex = '[\-?\d\.\d\d]+'
 
     def to_python(self, value):
         return float(value)

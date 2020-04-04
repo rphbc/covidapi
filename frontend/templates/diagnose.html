@@ -107,13 +107,16 @@ adult inpatients with Covid-19 in Wuhan, China: a retrospective cohort study. Th
 
   <p><strong>Acurácia da rede neural:</strong> <a style="color:blue">{{ acuracia }} %</a></p>
 
-  <p><strong>Validação 1</strong></p>
+  <h4><strong>Validações</strong></h4>
+  <p>De modo a validar a precisão, 2 testes são feitos abaixo. Se os valores diferirem do título, aperte f5 para
+  um novo treinamento da rede neural.</p>
+  <p><strong>Validação 1 - NEGATIVO</strong></p>
   <p> dados: {{ dados_neg }}</p>
-  <p> Resultado: <strong style="color:blue">NEGATIVO</strong></p>
+  <p> Resultado: <strong style="color:blue">{{ result_neg }}</strong></p>
 
-  <p><strong>Validação 2</strong></p>
+  <p><strong>Validação 2 - POSITIVO</strong></p>
   <p> dados: {{ dados_pos }}</p>
-  <p> Resultado: <strong style="color:blue">POSITIVO</strong></p>
+  <p> Resultado: <strong style="color:blue">{{ result_pos }}</strong></p>
 
 </div>
 <div class="col-md-4 sticky" style="text-align:center">
