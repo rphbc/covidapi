@@ -1,7 +1,7 @@
 const WIDTH = 500;
 const HEIGHT = 500;
-let BOX_SIZE = 100;
-const MIN_SPACING = 25;
+let BOX_SIZE = 60;
+const MIN_SPACING = 20;
 let POP_NUM = 5;
 let DAYS_CURE = 700;
 let INFECTION_RADIUS = 50;
@@ -15,18 +15,21 @@ let input, button;
 function calc_boxes() {
     let positions = [];
     console.log('INSIDE CALC', BOX_SIZE);
-    let max_per_row = floor(WIDTH / (BOX_SIZE + MIN_SPACING));
-    let max_per_col = floor(HEIGHT / (BOX_SIZE + MIN_SPACING));
-    let ext_spc_row = (WIDTH - max_per_row * BOX_SIZE) / (max_per_row + 1);
-    let ext_spc_col = (HEIGHT - max_per_row * BOX_SIZE) / (max_per_row + 1);
+    let max_per_row = floor(WIDTH / (BOX_SIZE + MIN_SPACING)) -1 ;
+    let max_per_col = floor(HEIGHT / (BOX_SIZE + MIN_SPACING)) - 1;
+    let ext_spc_row = (WIDTH - (max_per_row)* BOX_SIZE) / (max_per_row+1);
+    let ext_spc_col = (HEIGHT - (max_per_row)* BOX_SIZE) / (max_per_row+1);
+
+    console.log(max_per_row, max_per_col, ext_spc_row, ext_spc_col);
+    debugger
 
     let box_spc_row = ext_spc_row;
     let box_spc_col = ext_spc_col;
 
-    for (let i = 1; i <= max_per_col; i++) {
-        for (let j = 1; j <= max_per_row; j++) {
-            let x = i * (box_spc_col) + (i - 1) * (BOX_SIZE);
-            let y = j * (box_spc_row) + (j - 1) * (BOX_SIZE);
+    for (let i = 1; i <= max_per_row; i++) {
+        for (let j = 1; j <= max_per_col; j++) {
+            let x = i * (box_spc_row) + (i - 1) * (BOX_SIZE);
+            let y = j * (box_spc_col) + (j - 1) * (BOX_SIZE);
             positions.push([x, y]);
         }
     }
@@ -42,53 +45,51 @@ function mybox(x, y) {
 }
 
 function populate_boxes(box_l) {
-    particles.push(new Particle(box_list[0][0], box_list[0][1], BOX_SIZE, true));
+    particles.push(new Particle(box_list[0][0], box_list[0][1], BOX_SIZE, true, 0));
 
     for (let b = 0; b < box_list.length; b++) {
         for (let i = 0; i < POP_NUM; i++) {
-            particles.push(new Particle(box_list[b][0], box_list[b][1], BOX_SIZE, false));
+            particles.push(new Particle(box_list[b][0], box_list[b][1], BOX_SIZE, false, b));
         }
     }
 }
 
 function setup() {
-    createCanvas(WIDTH, HEIGHT);
+    let canvas = createCanvas(WIDTH, HEIGHT);
+    canvas.parent('simulation');
 
-    input = createInput(BOX_SIZE);
-    input.position(WIDTH+50, 30);
-    let boxlabel = createElement('h2', 'Tamanho das caixas');
-    boxlabel.position(input.x, input.y - 45);
+    input = select('#box-size');
+    input.elt.value = BOX_SIZE;
 
-    label_slider_inf_prob = createElement('p');
-    label_slider_inf_prob.position(input.x, input.y + 30);
-    slider_inf_prob = createSlider(0, 100, INFECTION_PROB / 10, 5);
-    slider_inf_prob.position(input.x, label_slider_inf_prob.y + 45);
+    slider_inf_prob = select('#inf-prob');
+    slider_inf_prob.elt.value = INFECTION_PROB / 10;
+    slider_inf_prob.elt.min = 0;
+    slider_inf_prob.elt.max = 100;
+    slider_inf_prob.elt.step = 5;
 
-    label_slider_inf_radius = createElement('p');
-    label_slider_inf_radius.position(input.x, slider_inf_prob.y + 30);
-    slider_inf_radius = createSlider(0, 100, INFECTION_RADIUS, 5);
-    slider_inf_radius.position(input.x, label_slider_inf_radius.y + 45);
+    slider_inf_radius = select('#inf-radius');
+    slider_inf_radius.elt.value = INFECTION_RADIUS;
+    slider_inf_radius.elt.min = 0;
+    slider_inf_radius.elt.max = 100;
+    slider_inf_radius.elt.step = 5;
 
-    label_slider_days_cure = createElement('p');
-    label_slider_days_cure.position(input.x, slider_inf_radius.y + 30);
-    slider_inf_days_cure = createSlider(0, 1000, DAYS_CURE, 50);
-    slider_inf_days_cure.position(input.x, label_slider_days_cure.y + 45);
+    slider_inf_days_cure = select('#days-cure');
+    slider_inf_days_cure.elt.value = DAYS_CURE;
+    slider_inf_days_cure.elt.min = 0;
+    slider_inf_days_cure.elt.max = 1000;
+    slider_inf_days_cure.elt.step = 50;
 
-    label_slider_population = createElement('p');
-    label_slider_population.position(input.x, slider_inf_days_cure.y + 30);
-    slider_inf_population = createSlider(0, 50, POP_NUM, 1);
-    slider_inf_population.position(input.x, label_slider_population.y + 45);
+    slider_inf_population = select('#pop-box');
+    slider_inf_population.elt.value = POP_NUM;
+    slider_inf_population.elt.min = 0;
+    slider_inf_population.elt.max = 50;
+    slider_inf_population.elt.step = 1;
 
+    normallabel = select('#healthy-people');
+    infectedlabel = select('#infected-people');
+    recoveredlabel = select('#recovered-people');
 
-    normallabel = createElement('h2', 'Normal: ' + particles.length);
-    normallabel.position(input.x, slider_inf_population.y + 50);
-    infectedlabel = createElement('h2', 'Infectados: ' + particles.length);
-    infectedlabel.position(input.x, normallabel.y + 50);
-    recoveredlabel = createElement('h2', 'Recuperados: ' + particles.length);
-    recoveredlabel.position(input.x, infectedlabel.y + 50);
-
-    button = createButton('Restart');
-    button.position(input.x + input.width + 5, input.y);
+    button = select('#restart');
     button.mousePressed(update_sim);
 
     box_list = calc_boxes();
@@ -114,14 +115,17 @@ function draw() {
 }
 
 function update_sim() {
-    const number = input.value();
+    let number = input.value();
+    if (number === '') {
+        number = BOX_SIZE;
+    }
     BOX_SIZE = parseInt(number);
     INFECTION_PROB = parseInt(slider_inf_prob.value()) * 10;
     INFECTION_RADIUS = parseInt(slider_inf_radius.value());
     DAYS_CURE = parseInt(slider_inf_days_cure.value());
     POP_NUM = parseInt(slider_inf_population.value());
 
-    console.log('infeciton', INFECTION_PROB);
+    console.log('infection', INFECTION_PROB);
     console.log(BOX_SIZE, number);
 
     box_list = calc_boxes();
@@ -149,10 +153,12 @@ function update_labels() {
                 break;
         }
     }
-    label_slider_inf_prob.html('Probabilidade de contaminação: ' + slider_inf_prob.value());
-    label_slider_inf_radius.html('Raio de contaminação: ' + slider_inf_radius.value());
-    label_slider_days_cure.html('Dias para cura: ' + slider_inf_days_cure.value());
-    label_slider_population.html('População por caixa: ' + slider_inf_population.value());
+    // label_slider_inf_prob.html('Probabilidade de contaminação: ' + slider_inf_prob.value());
+    slider_inf_prob.elt.labels[0].innerHTML =  'Probabilidade de' +
+        ' contaminação: ' + slider_inf_prob.value();
+    slider_inf_radius.elt.labels[0].innerHTML =  'Raio de contaminação: ' + slider_inf_radius.value();
+    slider_inf_days_cure.elt.labels[0].innerHTML =  'Dias para cura: ' + slider_inf_days_cure.value();
+    slider_inf_population.elt.labels[0].innerHTML =  'População por caixa: ' + slider_inf_population.value();
 
     normallabel.html('Normal: ' + normal);
     infectedlabel.html('Infectados: ' + infected);

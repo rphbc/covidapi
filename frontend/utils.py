@@ -52,6 +52,7 @@ def curva_evolucao_confirmados(base,lista_paises):
         curva_evolucao_confirmados = confirmed_cases_t6
         return curva_evolucao_confirmados
 
+
 def plot_curva_evolucao_confirmados(dados_graf,dados_paises,plot_china=0):
     fig = go.Figure()
 
@@ -82,6 +83,7 @@ def plot_curva_evolucao_confirmados(dados_graf,dados_paises,plot_china=0):
 
     return chart
 
+
 def progressao_confirmados(base,lista_paises):
 
         base_analise = curva_evolucao_confirmados(base,lista_paises)
@@ -108,6 +110,7 @@ def progressao_confirmados(base,lista_paises):
         base_agrega = base_agrega.loc[base_agrega['Country/Region'].isin(lista_paises)]
 
         return base_agrega
+
 
 def plot_progressao_confirmados(dados_graf,dados_paises,plot_china=0):
     fig = go.Figure()
@@ -136,6 +139,7 @@ def plot_progressao_confirmados(dados_graf,dados_paises,plot_china=0):
         )
 
     return chart
+
 
 def acumulo_progressao_confirmados(base,lista_paises):
 
@@ -196,6 +200,7 @@ def acumulo_progressao_confirmados(base,lista_paises):
 
     return base_analise_4
 
+
 def plot_acumulo_progressao_confirmados(dados_graf,dados_paises,plot_china=0):
     fig = go.Figure()
 
@@ -225,6 +230,7 @@ def plot_acumulo_progressao_confirmados(dados_graf,dados_paises,plot_china=0):
         )
 
     return chart
+
 
 def projecao_brasil(base,lista_paises,lista_paises2):
     base_analise = curva_evolucao_confirmados(base,lista_paises)
@@ -271,6 +277,7 @@ def projecao_brasil(base,lista_paises,lista_paises2):
     aux_final.rename(columns={'variable':'Country/Region'},inplace=True)
 
     return aux_final
+
 
 def plot_projecao_brasil(dados_graf,dados_paises,plot_china=0):
     fig = go.Figure()

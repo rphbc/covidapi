@@ -4,14 +4,75 @@
 <head>
   <meta charset="UTF-8">
   <title>Simulation COVID19</title>
+  <link rel="stylesheet" type="text/css" href="
+{% static 'styles/simulation.css' %}">
   <script src="{% static 'js/p5.min.js' %}"></script>
   <script src="{% static 'js/particles.js' %}"></script>
   <script src="{% static 'js/covid.js' %}"></script>
 </head>
 <body>
-<div id="container">
+<div id="page-wrap">
+  <div id="wrapper">
+    <div id="simulation">
+
+    </div>
+
+    <div id="control-panel">
+      <h2>Painel de Controle</h2>
+
+      <div>
+        <label for="box-size">
+          Tamanho das caixas
+        </label>
+      </div>
+      <div>
+        <input type="number" id="box-size">
+      </div>
+
+      <div>
+        <label for="inf-prob">
+          Probabilidade de contaminação: n
+        </label>
+      </div>
+      <div>
+        <input type="range" id="inf-prob">
+      </div>
+
+      <div>
+        <label for="inf-radius">
+          Raio de contaminação: r
+        </label>
+      </div>
+      <div>
+        <input type="range" id="inf-radius">
+      </div>
+
+      <div>
+        <label for="days-cure">
+          Dias para cura: d
+        </label>
+      </div>
+      <div>
+        <input type="range" id="days-cure">
+      </div>
+
+      <div>
+        <label for="pop-box">
+          População por caixa: p
+        </label>
+      </div>
+      <div>
+        <input type="range" id="pop-box">
+      </div>
+      <input type="button" value="Restart" class="restart-button" id="restart">
+    </div>
+    <div id="realtime-data">
+      <h2 id="healthy-people"></h2>
+      <h2 id="infected-people"></h2>
+      <h2 id="recovered-people"></h2>
+    </div>
+  </div>
 
 </div>
-
 </body>
 </html>

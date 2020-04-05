@@ -35,8 +35,6 @@ class Home(TemplateView):
 
         df_conf.drop(['id'], axis=1, inplace=True)
 
-        # plot = plotlinechart(df_conf, ['Brazil', 'Italy'], 'Confirmados')
-
         lista_paises = ['Australia', 'Iran', 'Italy', 'Japan', 'Korea, South',
                         'Spain', 'United Kingdom', 'US', 'Netherlands',
                         'Norway', 'Brazil', 'China']

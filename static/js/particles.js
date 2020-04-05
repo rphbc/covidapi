@@ -2,7 +2,7 @@
 class Particle {
 // setting the co-ordinates, radius and the
 // speed of a particle in both the co-ordinates axes.
-    constructor(limit_x, limit_y, size, infected) {
+    constructor(limit_x, limit_y, size, infected, box) {
         this.limit_x = limit_x;
         this.limit_y = limit_y;
         this.size = size;
@@ -11,12 +11,12 @@ class Particle {
         this.r = 8;
         this.xSpeed = random(-2, 2);
         this.ySpeed = random(-2, 2);
+        this.box = box
 
         // 0 for normal, 1 for infected, 2 for recovered, 3 for dead
         if (infected) {
             this.health = 1;
-        }
-        else {
+        } else {
             this.health = 0;
         }
 
@@ -25,7 +25,7 @@ class Particle {
 
 // creation of a particle.
     colorParticle() {
-        switch (this.health){
+        switch (this.health) {
             case 0:
                 noStroke();
                 fill('rgba(12,50,196,0.5)');
@@ -58,11 +58,11 @@ class Particle {
         this.x += this.xSpeed;
         this.y += this.ySpeed;
 
-        if (this.infected_age > DAYS_CURE){
+        if (this.infected_age > DAYS_CURE) {
             this.health = 2;
         }
 
-        if (this.health === 1){
+        if (this.health === 1) {
             this.infected_age++;
         }
     }
@@ -79,18 +79,21 @@ class Particle {
         });
     }
 
-    infectParticles(particles){
+    infectParticles(particles) {
         particles.forEach(element => {
-            let dis = dist(this.x, this.y, element.x, element.y);
-            if (dis < INFECTION_RADIUS) {
-                stroke('rgba(255,255,255,0.4)');
-                line(this.x, this.y, element.x, element.y);
-                if (this.health === 1 && random(0,1000) <= INFECTION_PROB
-                    && element.health === 0){
-                    // console.log('spread infection');
-                    element.health = 1;
+            // if (this.box === element.box) {
+                let dis = dist(this.x, this.y, element.x, element.y);
+                if (dis < INFECTION_RADIUS) {
+                    stroke('rgba(255,255,255,0.4)');
+                    line(this.x, this.y, element.x, element.y);
+                    if (this.health === 1 && random(0, 1000) <= INFECTION_PROB
+                        && element.health === 0) {
+                        // console.log('spread infection');
+                        element.health = 1;
+                    }
                 }
-            }
+            // }
+
         });
     }
 }
