@@ -46,21 +46,12 @@ def plotlinechart(data_list, countries, plot_name):
 
 def curva_log_confirmados_mundo(df_hist,lista_paises):
 
-    ################################################################################################
-    # upload csv
-    csv = 'full_data.csv'
-    df_hist = pd.read_csv(csv, sep=';|,')
-
-    # order data to ensure chronology
-    # df_hist.timestamp = pd.to_datetime(df_hist.timestamp)
-    df_hist = df_hist.sort_values(by=['country', 'timestamp'])
-    ################################################################################################
-
     # create a column of acumulated cases
-    df_hist['acumulated'] = 0
+    df_hist['new_cases'] = 0
+    df_hist = df_hist.sort_values(by=['country', 'timestamp'])
 
     # rename the 'count' column to "new_cases"
-    df_hist = df_hist.rename(columns={'count': 'new_cases'})
+    df_hist = df_hist.rename(columns={'count': 'acumulated'})
 
     # reset index
     df_hist = df_hist.reset_index()
@@ -70,10 +61,14 @@ def curva_log_confirmados_mundo(df_hist,lista_paises):
 
         if index != 0:
             if df_hist.iloc[index - 1]['country'] == df_hist.iloc[index]['country']:
-                df_hist.at[index, 'acumulated'] = df_hist.iloc[index - 1]['acumulated'] + df_hist.iloc[index - 1][
-                    'new_cases']
+                df_hist.at[index, 'new_cases'] = df_hist.iloc[index]['acumulated'] - df_hist.iloc[index - 1][
+                    'acumulated']
             else:
                 print("")
+
+    # print dos nomes dos grupos
+    # print(df_hist.groupby('country').groups.keys())
+    print(df_hist.loc[df_hist['country'] == "Brazil"])
 
     return df_hist
 
@@ -82,17 +77,11 @@ def plot_curva_log_confirmados_mundo(df_hist, lista_paises):
 
     fig = go.Figure()
 
-    fig.add_trace(go.Scatter(name="Brazil",x=df_hist.groupby('country').get_group('Brazil')['acumulated'],y=df_hist.groupby('country').get_group('Brazil')['new_cases']))
-    fig.add_trace(go.Scatter(name="France",x=df_hist.groupby('country').get_group('France')['acumulated'],y=df_hist.groupby('country').get_group('France')['new_cases']))
-    fig.add_trace(go.Scatter(name="Italy",x=df_hist.groupby('country').get_group('Italy')['acumulated'],y=df_hist.groupby('country').get_group('Italy')['new_cases']))
-    fig.add_trace(go.Scatter(name="China",x=df_hist.groupby('country').get_group('China')['acumulated'],y=df_hist.groupby('country').get_group('China')['new_cases']))
-    fig.add_trace(go.Scatter(name="United States",x=df_hist.groupby('country').get_group('United States')['acumulated'],y=df_hist.groupby('country').get_group('United States')['new_cases']))
-    fig.add_trace(go.Scatter(name="South Korea",x=df_hist.groupby('country').get_group('South Korea')['acumulated'],y=df_hist.groupby('country').get_group('South Korea')['new_cases']))
-    fig.add_trace(go.Scatter(name="Japan",x=df_hist.groupby('country').get_group('Japan')['acumulated'],y=df_hist.groupby('country').get_group('Japan')['new_cases']))
-    fig.add_trace(go.Scatter(name="Spain",x=df_hist.groupby('country').get_group('Spain')['acumulated'],y=df_hist.groupby('country').get_group('Spain')['new_cases']))
-    fig.add_trace(go.Scatter(name="United Kingdom",x=df_hist.groupby('country').get_group('United Kingdom')['acumulated'],y=df_hist.groupby('country').get_group('United Kingdom')['new_cases']))
+    for l in lista_paises:
+        fig.add_trace(go.Scatter(name=str(l), x=df_hist.groupby('country').get_group(str(l))['acumulated'],
+                                 y=df_hist.groupby('country').get_group(str(l))['new_cases']))
 
-    fig.update_layout(yaxis_type="log", xaxis_type="log", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',title='Casos totais x casos novos BR')
+    fig.update_layout(yaxis_type="log", xaxis_type="log", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',title='Casos totais x casos novos Mundo')
 
     fig.update_xaxes(title_text='novos casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
     fig.update_yaxes(title_text='total de casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')

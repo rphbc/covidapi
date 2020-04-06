@@ -79,9 +79,9 @@ class Home(TemplateView):
 
         plot_4 = plot_projecao_brasil(dados_graf_4, dados_paises, 1)
 
-        df_plot5 = curva_log_confirmados_mundo(0,0)
+        df_plot5 = curva_log_confirmados_mundo(df_conf,lista_paises)
 
-        plot_5 = plot_curva_log_confirmados_mundo(df_plot5,0)
+        plot_5 = plot_curva_log_confirmados_mundo(df_plot5,lista_paises)
 
         df_plot6 = curva_log_confirmados_brasil(0,0)
 
