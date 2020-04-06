@@ -39,8 +39,6 @@ def update_database():
         for col, endpoint in endpoints:
             data[col] = s.get(endpoint).content.decode('utf-8')
 
-    print(data)
-
     tables = {
         'confirmed': ConfirmedData,
         'deaths': DeadData,
