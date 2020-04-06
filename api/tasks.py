@@ -4,6 +4,7 @@ from io import StringIO
 
 import pandas as pd
 import requests
+from celery.schedules import crontab
 from celery.task import Task
 
 from api.models import ConfirmedData, DeadData, RecoveredData
@@ -71,5 +72,6 @@ def update_database():
 
 
 # Registering to the scheduler
-app.add_periodic_task(20.0, update_database.s(), name='update_scheduler',
-                      expires=60.0)
+app.add_periodic_task(crontab(minute=0, hour=8), update_database.s(),
+                      name='update_scheduler',
+                      )

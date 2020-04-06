@@ -1,3 +1,4 @@
+import pytz
 from django.http import HttpResponse
 from django.shortcuts import render
 import pandas as pd
@@ -25,9 +26,20 @@ class Home(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(Home, self).get_context_data(**kwargs)
 
-        conf = ConfirmedData.objects.all().values()
-        dead = DeadData.objects.all().values()
-        recovered = RecoveredData.objects.all().values()
+        conf = ConfirmedData.objects.all().values('id', 'country', 'count', 'timestamp')
+        dead = DeadData.objects.all().values('id', 'country', 'count',
+                                             'timestamp')
+        recovered = RecoveredData.objects.all().values('id','country', 'count', 'timestamp')
+
+        last_updated = None
+        try:
+            last_updated = ConfirmedData.objects.latest(
+                'created_at').created_at
+            # sp_tz = pytz.timezone('America/Sao_Paulo')
+            # last_updated = sp_tz.localize(last_updated)
+
+        except ConfirmedData.DoesNotExist:
+            print('Empty database')
 
         df_conf = pd.DataFrame.from_records(conf, index='timestamp')
         df_dead = pd.DataFrame.from_records(dead, index='timestamp')
@@ -79,6 +91,7 @@ class Home(TemplateView):
             'chart_2': plot_2,
             'chart_3': plot_3,
             'chart_4': plot_4,
+            'last_update': last_updated
         })
 
         return context
