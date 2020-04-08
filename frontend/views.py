@@ -105,7 +105,7 @@ class Home(TemplateView):
             'chart_3': plot_3,
             'chart_4': plot_4,
             'chart_5': plot_5,
-            'chart_6': plot_6
+            'chart_6': plot_6,
             'last_update': last_updated
         })
 
@@ -144,7 +144,6 @@ class Diagnose(TemplateView):
 
 def vote(request):
     if request.method == "POST":
-        print(request.POST)
         question = request.POST.get('question_id',999)
         question2 = request.POST.get('question_id2', 999)
     return HttpResponseRedirect(reverse('frontend:result_vote',args=[question,question2]))
@@ -156,7 +155,6 @@ def result_vote(request, question_id, question_id2):
 
 def predict(request):
     if request.method == "POST":
-        print(request.POST)
         lista_pred=[]
         for i in range(15):
             lista_pred.append(request.POST.get('question_id'+str(i+1),999))

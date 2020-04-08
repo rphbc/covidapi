@@ -14,6 +14,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import openpyxl
 
+from timeit import default_timer as timer
+
 
 def plotlinechart(data_list, countries, plot_name):
     data_list.index = data_list.index.strftime("%Y-%m-%d")
@@ -44,33 +46,54 @@ def plotlinechart(data_list, countries, plot_name):
 
     return chart
 
+
 def curva_log_confirmados_mundo(df_hist,lista_paises):
 
+    # dt0 = timer()
+
+    country_list = list(df_hist['country'].unique())
+    country_dict = {country: df_hist.loc[df_hist['country'] == country] for
+                    country in
+                    country_list}
+    country_dict2 = []
+    resample_freq = '2D'
+    for country, df in country_dict.items():
+        df2 = df.loc[df['count'] > 50]  # Cut the begining of the curve
+        df2 = df2.resample(resample_freq).mean()
+        df2['new_cases'] = np.round(df2['count'] - df2['count'].shift(1))
+        df2['country'] = country
+        df2.fillna(0.0, inplace=True)
+        country_dict2.append(df2)
+
+    df_tot = pd.concat(country_dict2)
+    df_tot.reset_index(inplace=True)
+    df_tot.rename(columns={'count': 'acumulated'}, inplace=True)
+    # dt1 = timer()
     # create a column of acumulated cases
-    df_hist['new_cases'] = 0
-    df_hist = df_hist.sort_values(by=['country', 'timestamp'])
+    # df_hist['new_cases'] = 0
+    # df_hist = df_hist.sort_values(by=['country', 'timestamp'])
+    #
+    # # rename the 'count' column to "new_cases"
+    # df_hist = df_hist.rename(columns={'count': 'acumulated'})
+    #
+    # # reset index
+    # df_hist = df_hist.reset_index()
+    #
+    # # iterate to sum acumulated cases
+    # for index, row in df_hist.iterrows():
+    #
+    #     if index != 0:
+    #         if df_hist.iloc[index - 1]['country'] == df_hist.iloc[index]['country']:
+    #             df_hist.at[index, 'new_cases'] = df_hist.iloc[index]['acumulated'] - df_hist.iloc[index - 1][
+    #                 'acumulated']
+    #         else:
+    #             pass
+    # dt2 = timer()
 
-    # rename the 'count' column to "new_cases"
-    df_hist = df_hist.rename(columns={'count': 'acumulated'})
-
-    # reset index
-    df_hist = df_hist.reset_index()
-
-    # iterate to sum acumulated cases
-    for index, row in df_hist.iterrows():
-
-        if index != 0:
-            if df_hist.iloc[index - 1]['country'] == df_hist.iloc[index]['country']:
-                df_hist.at[index, 'new_cases'] = df_hist.iloc[index]['acumulated'] - df_hist.iloc[index - 1][
-                    'acumulated']
-            else:
-                print("")
-
-    # print dos nomes dos grupos
-    # print(df_hist.groupby('country').groups.keys())
-    print(df_hist.loc[df_hist['country'] == "Brazil"])
-
-    return df_hist
+    # print(f' tempo um : {dt1-dt0}')
+    # print(f'tempo dois: {dt2-dt1}')
+    # return df_hist
+    return df_tot
 
 
 def plot_curva_log_confirmados_mundo(df_hist, lista_paises):
@@ -83,8 +106,8 @@ def plot_curva_log_confirmados_mundo(df_hist, lista_paises):
 
     fig.update_layout(yaxis_type="log", xaxis_type="log", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',title='Casos totais x casos novos Mundo')
 
-    fig.update_xaxes(title_text='novos casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
-    fig.update_yaxes(title_text='total de casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
+    fig.update_xaxes(title_text='total de casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
+    fig.update_yaxes(title_text='novos casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
 
     chart = py.plot(
         fig,
@@ -127,10 +150,7 @@ def curva_log_confirmados_brasil(df_hist, lista_estados):
                 df_hist.at[index, 'new_cases'] = df_hist.iloc[index]['acumulated'] - df_hist.iloc[index - 1][
                     'acumulated']
             else:
-                print("")
-
-    # print dos nomes dos grupos
-    print(df_hist.groupby('country').groups.keys())
+                continue
 
     return df_hist
 
@@ -149,8 +169,8 @@ def plot_curva_log_confirmados_brasil(df_hist, lista_estados):
 
     fig.update_layout(yaxis_type="log", xaxis_type="log", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',title='Casos totais x casos novos BR')
 
-    fig.update_xaxes(title_text='novos casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
-    fig.update_yaxes(title_text='total de casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
+    fig.update_xaxes(title_text='total de casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
+    fig.update_yaxes(title_text='novos casos', showline=True, linewidth=1, linecolor='rgb(128,128,128)',showgrid=True, gridwidth=0.5, gridcolor='rgb(240,240,240)')
 
     chart = py.plot(
         fig,
@@ -222,7 +242,6 @@ def progressao_confirmados(base,lista_paises):
                     qtde_dias = int(base_pais.loc[base_pais['value']>=int(base_pais.loc[base_pais['var_dates']==i,'value'])*2].head(1)['var_dates'])-i
                 except:
                     qtde_dias = np.nan
-                #print(i,j,qtde_dias)
                 base_valores = pd.DataFrame(data={'pais':j,'data':i,'qtde_dias':qtde_dias},index={0})
                 base_agrega = pd.concat([base_agrega,base_valores])
 
@@ -482,8 +501,8 @@ def trata_base_Einstein(df):
     # checa se deu tudo certo
     for column in df1:
         a = list(df1[column].map(type) != str)
-        if (len(set(a)) != 1):
-            print("valores mistos remanescentes em: " + column)
+        # if (len(set(a)) != 1):
+        #     print("valores mistos remanescentes em: " + column)
 
     ### como, neste caso, o timestamp não importa, pode-se preencher com qualquer valor sequencial ###
 
@@ -548,8 +567,8 @@ def feature_importance_Einstein(base):
         pass
 
     # Encontra as variáveis mais relevante para a incidência de COVID-19
-    model = ExtraTreesClassifier()
-    model.fit(df1, df_out)
+    model = ExtraTreesClassifier(verbose=False)
+    a = model.fit(df1, df_out)
 
     lista_importances = pd.DataFrame([model.feature_importances_])
     lista_importances.columns = list(df1.columns)
@@ -559,11 +578,11 @@ def feature_importance_Einstein(base):
 
     top15 = list(lista_importances.columns[0:15])
     top15_values = []
-    print("Variáveis mais impactantes:")
+    # print("Variáveis mais impactantes:")
     for l in lista_importances.columns[0:15]:
-        print("Nome: " + str(l) + " - " + str(lista_importances[l][0]) + " %")
+        # print("Nome: " + str(l) + " - " + str(lista_importances[l][0]) + " %")
         top15_values.append(lista_importances[l][0])
-    print(top15)
+    # print(top15)
 
     # cria dataset para predição
     df_in = df1[top15]
@@ -611,16 +630,17 @@ def predict_Einstein(base):
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=27)
 
     clf = MLPClassifier(hidden_layer_sizes=(100, 100, 100), max_iter=2500, alpha=0.0001,
-                        solver='lbfgs', verbose=10, random_state=21, tol=0.000000001)
+                        solver='lbfgs', verbose=False, random_state=21,
+                        tol=0.000000001)
 
-    clf.fit(x_train, y_train)
+    a = clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
     acc = accuracy_score(y_test, y_pred)
     acc = acc * 100
     acc = "{:.2f}".format(acc)
-    print("teste finalizado")
-    print("Acurácia = " + str(acc) + "%")
+    # print("teste finalizado")
+    # print("Acurácia = " + str(acc) + "%")
 
     # teste negativo
     lista_neg = [[-1.73367476463318,-1.77359390258789,0.609156608581543,1.38181185722351,17,
@@ -630,7 +650,7 @@ def predict_Einstein(base):
     lista_user = lista_neg
     lista_predict = pd.DataFrame(lista_user)
     lista_predict.columns = list(x.columns)
-    print(lista_predict)
+    # print(lista_predict)
 
     y_pred = clf.predict(lista_predict)
     if y_pred == 0:
@@ -638,7 +658,7 @@ def predict_Einstein(base):
     else:
         result_neg = 'POSITIVO'
 
-    print("Resultado: " + result_neg)
+    # print("Resultado: " + result_neg)
 
     # teste positivo
     lista_pos = [[-1.28842806816101,-0.906829118728638,-0.503570020198822,0.567652404308319,19,
@@ -648,7 +668,7 @@ def predict_Einstein(base):
     lista_user = lista_pos
     lista_predict = pd.DataFrame(lista_user)
     lista_predict.columns = list(x.columns)
-    print(lista_predict)
+    # print(lista_predict)
 
     y_pred = clf.predict(lista_predict)
     if y_pred == 0:
@@ -656,7 +676,7 @@ def predict_Einstein(base):
     else:
         result_pos = 'POSITIVO'
 
-    print("Resultado: " + result_pos)
+    # print("Resultado: " + result_pos)
 
     params = clf.get_params()
 
@@ -684,24 +704,25 @@ def predict_Einstein2(base,lista_pred):
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=27)
 
     clf = MLPClassifier(hidden_layer_sizes=(100, 100, 100), max_iter=2500, alpha=0.0001,
-                        solver='lbfgs', verbose=10, random_state=21, tol=0.000000001)
+                        solver='lbfgs', verbose=False, random_state=21,
+                        tol=0.000000001)
 
-    clf.fit(x_train, y_train)
+    a = clf.fit(x_train, y_train)
     y_pred = clf.predict(x_test)
 
     acc = accuracy_score(y_test, y_pred)
     acc = acc * 100
     acc = "{:.2f}".format(acc)
-    print("teste finalizado")
-    print("Acurácia = " + str(acc) + "%")
-
-    print("digite os numeros em sequência:")
+    # print("teste finalizado")
+    # print("Acurácia = " + str(acc) + "%")
+    #
+    # print("digite os numeros em sequência:")
     lista_user = lista_pred
 
     lista_user = [lista_user]
     lista_predict = pd.DataFrame(lista_user)
     lista_predict.columns = list(x.columns)
-    print(lista_predict)
+    # print(lista_predict)
 
     y_pred = clf.predict(lista_predict)
     if y_pred == 0:
@@ -709,9 +730,9 @@ def predict_Einstein2(base,lista_pred):
     else:
         result = 'POSITIVO'
 
-    print("********************************************************")
-    print("Resultado: " + result)
-    print("********************************************************")
+    # print("********************************************************")
+    # print("Resultado: " + result)
+    # print("********************************************************")
 
     # teste negativo
     lista_neg = [[-1.73367476463318,-1.77359390258789,0.609156608581543,1.38181185722351,17,
@@ -721,7 +742,7 @@ def predict_Einstein2(base,lista_pred):
     lista_user = lista_neg
     lista_predict = pd.DataFrame(lista_user)
     lista_predict.columns = list(x.columns)
-    print(lista_predict)
+    # print(lista_predict)
 
     y_pred = clf.predict(lista_predict)
     if y_pred == 0:
@@ -729,7 +750,7 @@ def predict_Einstein2(base,lista_pred):
     else:
         result_neg = 'POSITIVO'
 
-    print("Resultado: " + result_neg)
+    # print("Resultado: " + result_neg)
 
     # teste positivo
     lista_pos = [[-1.28842806816101,-0.906829118728638,-0.503570020198822,0.567652404308319,19,
@@ -739,7 +760,7 @@ def predict_Einstein2(base,lista_pred):
     lista_user = lista_pos
     lista_predict = pd.DataFrame(lista_user)
     lista_predict.columns = list(x.columns)
-    print(lista_predict)
+    # print(lista_predict)
 
     y_pred = clf.predict(lista_predict)
     if y_pred == 0:
@@ -747,7 +768,7 @@ def predict_Einstein2(base,lista_pred):
     else:
         result_pos = 'POSITIVO'
 
-    print("Resultado: " + result_pos)
+    # print("Resultado: " + result_pos)
 
 
     params = clf.get_params()
