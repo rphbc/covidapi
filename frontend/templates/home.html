@@ -36,18 +36,19 @@
   <h1 align="center">
     Report de casos de COVID19
   </h1>
-
-
-    {{ chart_1|safe }}
+  {% if last_update %}
+    <h6 style="text-align: right"> *Última atualização: {{ last_update }}</h6>
+  {% endif %}
+  {{ chart_1|safe }}
 
 
   <p>
-    O gráfico acima mostra a evolução dos casos confirmados para  diferentes
-  países a partir do dia em que atingiram 50 casos. Esta métrica é utilizada
-  para comparar as curvas na mesma janela de tempo
+    O gráfico acima mostra a evolução dos casos confirmados para diferentes
+    países a partir do dia em que atingiram 50 casos. Esta métrica é utilizada
+    para comparar as curvas na mesma janela de tempo
   </p>
 
-    {{ chart_2|safe }}
+  {{ chart_2|safe }}
 
   <p>
     O gráfico acima mostra a velocidade de progressão de contaminação para
@@ -56,7 +57,7 @@
     menor o valor, mais rápida é a contaminação
   </p>
 
-    {{ chart_3|safe }}
+  {{ chart_3|safe }}
 
   <p>
     O gráfico acima mostra a velocidade de progressão de contaminação numa
@@ -65,7 +66,7 @@
     relação ao ponto 0
   </p>
 
-    {{ chart_4|safe }}
+  {{ chart_4|safe }}
 
   <p>
     O gráfico representa a projeção de casos para o Brasil caso ele seguisse
