@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+  <!--<meta charset="UTF-8">-->
+  <title>COVID19 DIAGNOSE</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+
+<style>
+div.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  background-color: yellow;
+}
+  .button2 {
+  font: bold 32px Arial;
+  text-decoration: none;
+  background-color: rgba(200,180,120,0.7);
+  color: #333333;
+  padding: 2px 6px 2px 6px;
+  border-top: 1px solid #CCCCCC;
+  border-right: 1px solid #333333;
+  border-bottom: 1px solid #333333;
+  border-left: 1px solid #CCCCCC;
+}
+</style>
+
+<body style="background: url(../images/covid19.jpeg) no-repeat center center fixed;">
+
+<div class="container p-3 my-3 border">
+
+   <div style="text-align:center">
+    <a class="button2" href="/">Página Inicial</a>
+    <a class="button2" href="/diagnose">Diagnóstico COVID</a>
+    <a class="button2" href="/simulation">Simulador Contágio</a>
+  </div>
+
+  <h4 style="text-align:justify"><strong style="color:red">IMPORTANTE: Esta solução é uma aproximação matemática e não garante a certeza
+  da existência de qualquer doença.Para a certeza do diagnóstico, procure seu médico.</strong></h4>
+
+  <!--<p><strong>Quanto maior a base de casos, melhor a análise. Se souberem de bases melhores, enviem para:-->
+  <!--contato@birmind.com.br</strong></p>-->
+
+  <p><strong>Bibliografia:</strong></p>
+  <ul>
+    <li>Lippi, G. & Plebani,M. (2020) Laboratory abnormalities in patients with Covid-2019 infection. Clinical
+Chemistry and Laboratory Medicine (CCLM), 0(0), pp-, Retrieved 19 Mar.2020, from doi: 10.1515/cclm2020-0198.
+      <a href="https://www.degruyter.com/view/journals/cclm/ahead-of-print/article-10.1515-cclm-2020-0198/
+      article-10.1515-cclm-2020-0198.xml">-> (Link)</a></li>
+    <li>Zhou,F., Yu, T.,Du, R.,Fan,G.,Liu,Y.,Liu,Z...&Guan,L. (2020) Clinical course and risk factors for mortality of
+adult inpatients with Covid-19 in Wuhan, China: a retrospective cohort study. The Lancet.
+      <a href="https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30566-3/fulltext">-> (Link)</a></li>
+  </ul>
+
+<div class="col-md-8">
+
+  <h1 align="center">
+    COVID19 DIAGNOSE
+  </h1>
+
+  <p>Esta aplicação tem o intuito de fazer uma análise prévia de testes laboratoriais para indicar a presença
+  ou não de COVID19, permitindo economizar testes e só utilizá-los em casos necessários.</p>
+
+  <p>O sistema foi modelado considerando o tratamento da base do Hospital Israelita Albert Einstein:
+    <a href="https://www.kaggle.com/dataset/e626783d4672f182e7870b1bbe75fae66bdfb232289da0a61f08c2ceb01cab01/data">link</a></p>
+
+  <p>A lógica foi a seguinte:</p>
+    <ul class="list-group">
+      <li class="list-group-item list-group-item-dark">  Limpeza da base (retirada de colunas vazias/com
+        poucos dados</li>
+      <li class="list-group-item list-group-item-dark">  Conversão de categorias para sequência numérica
+        (a,b.c vira 1,2,3 por exemplo)</li>
+      <li class="list-group-item list-group-item-dark">  Avaliação estatística de correlação entre análises de
+        laboratório e presença ou não de COVID19</li>
+      <li class="list-group-item list-group-item-dark">  Separação das top15 variáveis para treinamento de
+        uma rede neural</li>
+      <li class="list-group-item list-group-item-dark">  Treinamento da rede e testes de eficácia</li>
+      <li class="list-group-item list-group-item-dark">  Criação de uma aplicação simples para que o usuário
+        insira dados laboratoriais e receba a resposta o resultado de positivo ou negativo para COVID19</li>
+    </ul>
+
+  <p>Os resultados obtidos estão a seguir, bem como um espaço para você colocar os dados de
+  laboratório e o sistema diagnosticar a presença ou não de COVID19.</p>
+
+  <h4><strong>Variáveis mais relevantes:</strong></h4>
+  <p>(quanto cada uma das 15 principais variáveis influencia em resultados positivos para COVID-19)</p>
+  <table class="table">
+    {% for i,j in top15 %}
+      <tr>
+        <td>{{ i }}</td>
+        <td style="color:blue">{{ j|floatformat:2 }} %</td>
+      </tr>
+    {% endfor %}
+  </table>
+
+  <p><Strong>Modelo estatístico (ExtraTreeClassifier):</Strong> <a style="color:blue">{{ modelo_ft_import }}</a></p>
+
+  <h4><strong>Rede neural treinada:</strong></h4>
+  <p>(a partir dos dados de exames laboratoriais, qual seria o provável resultado do teste de COVID-19)</p>
+
+  <p><strong>Modelo da rede (MLPClassifier):</strong> <a style="color:blue">{{ modelo_mlpc }}</a></p>
+
+  <p><strong>Acurácia da rede neural:</strong> <a style="color:blue">{{ acuracia }} %</a></p>
+
+  <h4><strong>Validações</strong></h4>
+  <p>De modo a validar a precisão, 2 testes são feitos abaixo. Se os valores diferirem do título, aperte f5 para
+  um novo treinamento da rede neural.</p>
+  <p><strong>Validação 1 - NEGATIVO</strong></p>
+  <p> dados: {{ dados_neg }}</p>
+  <p> Resultado: <strong style="color:blue">{{ result_neg }}</strong></p>
+
+  <p><strong>Validação 2 - POSITIVO</strong></p>
+  <p> dados: {{ dados_pos }}</p>
+  <p> Resultado: <strong style="color:blue">{{ result_pos }}</strong></p>
+
+</div>
+<div class="col-md-4 sticky" style="text-align:center">
+
+  <h2>Diagnóstico COVID-19</h2>
+  <p>números com casas decimais, utilizar .(ponto) e não ,(vírgula)</p>
+
+  <form action="{% url 'frontend:predict' %}" method="post">
+  {% csrf_token %}
+
+    {% for i in top15_names %}
+    <label>{{ i }}</label><br>
+    <input type="text" name="question_id{{ forloop.counter }}" value="question_id{{ forloop.counter }}"><br>
+    {% endfor %}
+    <input type="submit" value="Calcular">
+
+  </form>
+
+
+
+</div>
+
+</div>
+
+</body>
+</html>
