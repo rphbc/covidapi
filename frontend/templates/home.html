@@ -13,16 +13,16 @@
 
 <style>
   .button {
-  font: bold 32px Arial;
-  text-decoration: none;
-  background-color: rgba(200,180,120,0.7);
-  color: #333333;
-  padding: 2px 6px 2px 6px;
-  border-top: 1px solid #CCCCCC;
-  border-right: 1px solid #333333;
-  border-bottom: 1px solid #333333;
-  border-left: 1px solid #CCCCCC;
-}
+    font: bold 32px Arial;
+    text-decoration: none;
+    background-color: rgba(200, 180, 120, 0.7);
+    color: #333333;
+    padding: 2px 6px 2px 6px;
+    border-top: 1px solid #CCCCCC;
+    border-right: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+    border-left: 1px solid #CCCCCC;
+  }
 </style>
 
 <div id="page-wrap">
@@ -33,7 +33,7 @@
     <a class="button" href="/simulation">Simulador Contágio</a>
   </div>
 
-<p></p>
+  <p></p>
 
   <h1 align="center">
     Report de casos de COVID19
@@ -76,18 +76,24 @@
     Coréia do Sul
   </p>
 
-    {{ chart_5|safe }}
+  {{ chart_5|safe }}
 
   <p>
     Este gráfico mostra a comparação entre os casos acumulados e novos casos
     no mundo, para sabermos se estamos controlando o surto
   </p>
 
-    {{ chart_6|safe }}
+  {{ chart_6|safe }}
 
   <p>
     Este gráfico mostra a comparação entre os casos acumulados e novos casos
     no Brasil, para sabermos se estamos controlando o surto
+  </p>
+
+  {{ chart_7|safe }}
+
+  <p>
+    Blah
   </p>
 
 </div>

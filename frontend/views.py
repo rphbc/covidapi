@@ -15,8 +15,10 @@ from frontend.utils import plotlinechart, curva_evolucao_confirmados, \
     plot_progressao_confirmados, acumulo_progressao_confirmados, \
     plot_acumulo_progressao_confirmados, projecao_brasil, plot_projecao_brasil, \
     plot_curva_log_confirmados_brasil, curva_log_confirmados_mundo, \
-    plot_curva_log_confirmados_mundo, curva_log_confirmados_brasil, trata_base_Einstein, \
-    feature_importance_Einstein, predict_Einstein, predict_Einstein2
+    plot_curva_log_confirmados_mundo, curva_log_confirmados_brasil, \
+    trata_base_Einstein, \
+    feature_importance_Einstein, predict_Einstein, predict_Einstein2, \
+    triple_graph, plot_triple_graph
 
 from .forms import NameForm
 
@@ -99,6 +101,10 @@ class Home(TemplateView):
 
         plot_6 = plot_curva_log_confirmados_brasil(df_plot6,0)
 
+        dados_graf_7 = triple_graph(df_conf, df_dead, df_recovered)
+
+        plot_7 = plot_triple_graph(dados_graf_7)
+
         context.update({
             'chart_1': plot_1,
             'chart_2': plot_2,
@@ -106,6 +112,7 @@ class Home(TemplateView):
             'chart_4': plot_4,
             'chart_5': plot_5,
             'chart_6': plot_6,
+            'chart_7': plot_7,
             'last_update': last_updated
         })
 

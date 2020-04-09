@@ -792,3 +792,78 @@ class FloatConverter:
 
     def to_url(self, value):
         return '{}'.format(value)
+
+
+def triple_graph(confirmed_data, dead_data, recovered_data, country='Brazil'):
+    df_conf = confirmed_data.loc[confirmed_data['country'] == country]
+    df_dead = dead_data.loc[dead_data['country'] == country]
+    df_recov = recovered_data.loc[recovered_data['country'] == country]
+
+    df_conf.rename(columns={'count': 'count_conf'}, inplace=True)
+    df_dead.rename(columns={'count': 'count_dead'}, inplace=True)
+    df_recov.rename(columns={'count': 'count_recov'}, inplace=True)
+
+    triple_data = pd.concat([df_conf, df_dead, df_recov],
+                            axis=1)
+    triple_data = triple_data.loc[triple_data['count_conf'] > 50]
+    triple_data.reset_index(inplace=True)
+
+    return triple_data
+
+
+def plot_triple_graph(triple_graph_data, country_list=('Brazil',)):
+
+    fig = go.Figure()
+
+    for l in country_list:
+        fig.add_trace(
+            go.Scatter(
+                name=str(l) + " Dead",
+                y=triple_graph_data['count_dead'],
+                x=triple_graph_data.index,
+                fill='tonexty',
+                line=dict(color='rgb(239,84, 59)'),
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                name=str(l) + " Confirmed",
+                y=triple_graph_data['count_conf'],
+                x=triple_graph_data.index,
+                fill='tonexty',
+                line=dict(color='rgb(98, 109, 251)'),
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                name=str(l) + " Recovered",
+                y=triple_graph_data['count_recov'],
+                x=triple_graph_data.index,
+                fill='tozeroy',
+                line=dict(color='rgb(0, 204, 150)'),
+            )
+        )
+
+    fig.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        title='Curva progressão casos - Brasil'
+    )
+
+    fig.update_xaxes(title_text='# Dias desde a confirmação de 50 casos', showline=True,
+                     linewidth=1,
+                     linecolor='rgb(128,128,128)', showgrid=True, gridwidth=0.5,
+                     gridcolor='rgb(240,240,240)')
+    fig.update_yaxes(title_text='# de casos', showline=True, linewidth=1,
+                     linecolor='rgb(128,128,128)', showgrid=True, gridwidth=0.5,
+                     gridcolor='rgb(240,240,240)')
+
+    chart = py.plot(
+        fig,
+        show_link=False,
+        output_type='div',
+        include_plotlyjs=False,
+        auto_open=False,
+    )
+
+    return chart
