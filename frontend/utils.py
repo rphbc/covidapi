@@ -98,14 +98,12 @@ def plot_curva_log_confirmados_mundo(df_hist, lista_paises):
 
 
 def curva_log_confirmados_brasil(df_hist, lista_estados):
-
-
     # upload csv
     csv = 'arquivo_geral.csv'
     df_hist = pd.read_csv(csv, sep=';|,')
 
     # order data to ensure chronology
-    df_hist.data = pd.to_datetime(df_hist.data,dayfirst=True)
+    df_hist.data = pd.to_datetime(df_hist.data, dayfirst=True)
     df_hist = df_hist.sort_values(by=['estado', 'data'])
 
     # create a column of acumulated cases
