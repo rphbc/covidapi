@@ -121,23 +121,19 @@ def plot_curva_log_confirmados_mundo(df_hist, lista_paises):
 
 
 def curva_log_confirmados_brasil(df_hist, lista_estados):
-
-
-    ################################################################################################
     # upload csv
-    csv = 'covid_br_state.csv'
+    csv = 'arquivo_geral.csv'
     df_hist = pd.read_csv(csv, sep=';|,')
 
     # order data to ensure chronology
-    df_hist.timestamp = pd.to_datetime(df_hist.timestamp)
-    df_hist = df_hist.sort_values(by=['country', 'timestamp'])
-    ################################################################################################
+    df_hist.data = pd.to_datetime(df_hist.data, dayfirst=True)
+    df_hist = df_hist.sort_values(by=['estado', 'data'])
 
     # create a column of acumulated cases
     df_hist['new_cases'] = 0
 
     # rename the 'count' column to "new_cases"
-    df_hist = df_hist.rename(columns={'count': 'acumulated'})
+    df_hist = df_hist.rename(columns={'casosAcumulados': 'acumulated'})
 
     # reset index
     df_hist = df_hist.reset_index()
@@ -146,7 +142,7 @@ def curva_log_confirmados_brasil(df_hist, lista_estados):
     for index, row in df_hist.iterrows():
 
         if index != 0:
-            if df_hist.iloc[index - 1]['country'] == df_hist.iloc[index]['country']:
+            if df_hist.iloc[index - 1]['estado'] == df_hist.iloc[index]['estado']:
                 df_hist.at[index, 'new_cases'] = df_hist.iloc[index]['acumulated'] - df_hist.iloc[index - 1][
                     'acumulated']
             else:
@@ -163,9 +159,9 @@ def plot_curva_log_confirmados_brasil(df_hist, lista_estados):
     # fig.add_trace(go.Scatter(name="RJ",x=df_hist.groupby('country').get_group('RJ')['acumulated'],y=df_hist.groupby('country').get_group('RJ')['new_cases']))
     # fig.add_trace(go.Scatter(name="DF",x=df_hist.groupby('country').get_group('DF')['acumulated'],y=df_hist.groupby('country').get_group('DF')['new_cases']))
 
-    for i in list(df_hist['country'].unique()):
-        fig.add_trace(go.Scatter(x=list(df_hist.loc[df_hist['country']==i,'acumulated']),
-                             y=list(df_hist.loc[df_hist['country']==i,'new_cases']), name=i,mode='lines'))
+    for i in list(df_hist['estado'].unique()):
+        fig.add_trace(go.Scatter(x=list(df_hist.loc[df_hist['estado']==i,'acumulated']),
+                             y=list(df_hist.loc[df_hist['estado']==i,'new_cases']), name=i,mode='lines'))
 
     fig.update_layout(yaxis_type="log", xaxis_type="log", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',title='Casos totais x casos novos BR')
 
