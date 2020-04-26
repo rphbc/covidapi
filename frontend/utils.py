@@ -121,47 +121,42 @@ def plot_curva_log_confirmados_mundo(df_hist, lista_paises):
 
 
 def curva_log_confirmados_brasil(df_hist, lista_estados):
-    # upload csv
-    csv = 'arquivo_geral.csv'
-    df_hist = pd.read_csv(csv, sep=';|,')
 
-    # order data to ensure chronology
-    df_hist.data = pd.to_datetime(df_hist.data, dayfirst=True)
-    df_hist = df_hist.sort_values(by=['estado', 'data'])
+    df_hist2 = df_hist
 
-    # create a column of acumulated cases
-    df_hist['new_cases'] = 0
+    state_list = list(df_hist2['state'].unique())
+    state_dict = {
+        state: df_hist2.loc[df_hist2['state'] == state] for state in
+        state_list}
+    state_dict2 = []
+    resample_freq = '2D'
+    for state, df in state_dict.items():
+        df2 = df.loc[df['total_cases'] > 50]  # Cut the begining of the curve
+        df2 = df2.resample(resample_freq).agg({
+            'new_deaths': np.sum,
+            'new_cases': np.sum,
+            'deaths': np.max,
+            'total_cases': np.max,
+        })
+        df2['state'] = state
+        df2.fillna(0.0, inplace=True)
+        state_dict2.append(df2)
 
-    # rename the 'count' column to "new_cases"
-    df_hist = df_hist.rename(columns={'casosAcumulados': 'acumulated'})
-
-    # reset index
-    df_hist = df_hist.reset_index()
-
-    # iterate to sum acumulated cases
-    for index, row in df_hist.iterrows():
-
-        if index != 0:
-            if df_hist.iloc[index - 1]['estado'] == df_hist.iloc[index]['estado']:
-                df_hist.at[index, 'new_cases'] = df_hist.iloc[index]['acumulated'] - df_hist.iloc[index - 1][
-                    'acumulated']
-            else:
-                continue
-
-    return df_hist
+    df_tot = pd.concat(state_dict2)
+    df_tot.sort_values(['state', 'timestamp'], inplace=True)
+    df_tot.reset_index(inplace=True)
+    return df_tot
 
 
 def plot_curva_log_confirmados_brasil(df_hist, lista_estados):
 
     fig = go.Figure()
 
-    # fig.add_trace(go.Scatter(name="SP",x=df_hist.groupby('country').get_group('SP')['acumulated'],y=df_hist.groupby('country').get_group('SP')['new_cases']))
-    # fig.add_trace(go.Scatter(name="RJ",x=df_hist.groupby('country').get_group('RJ')['acumulated'],y=df_hist.groupby('country').get_group('RJ')['new_cases']))
-    # fig.add_trace(go.Scatter(name="DF",x=df_hist.groupby('country').get_group('DF')['acumulated'],y=df_hist.groupby('country').get_group('DF')['new_cases']))
-
-    for i in list(df_hist['estado'].unique()):
-        fig.add_trace(go.Scatter(x=list(df_hist.loc[df_hist['estado']==i,'acumulated']),
-                             y=list(df_hist.loc[df_hist['estado']==i,'new_cases']), name=i,mode='lines'))
+    for i in list(df_hist['state'].unique()):
+        fig.add_trace(go.Scatter(x=list(df_hist.loc[df_hist['state']==i,
+                                                    'total_cases']),
+                             y=list(df_hist.loc[df_hist['state']==i,
+                                                'new_cases']), name=i,mode='lines'))
 
     fig.update_layout(yaxis_type="log", xaxis_type="log", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',title='Casos totais x casos novos BR')
 

@@ -1,8 +1,9 @@
 from django.contrib import admin
+from django.apps import apps
 
 # Register your models here.
-from api.models import ConfirmedData, DeadData, RecoveredData
 
-admin.site.register(ConfirmedData)
-admin.site.register(DeadData)
-admin.site.register(RecoveredData)
+app = apps.get_app_config('api')
+
+for model_name, model in app.models.items():
+    admin.site.register(model)

@@ -8,7 +8,8 @@ from django.urls import reverse
 
 from django.views.generic import TemplateView
 
-from api.models import ConfirmedData, DeadData, RecoveredData
+from api.models import ConfirmedData, DeadData, RecoveredData, CovidData, \
+    ImportsUpdate
 from api.tasks import update_database
 from frontend.utils import plotlinechart, curva_evolucao_confirmados, \
     plot_curva_evolucao_confirmados, progressao_confirmados, \
@@ -33,28 +34,27 @@ class Home(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(Home, self).get_context_data(**kwargs)
 
-        conf = ConfirmedData.objects.all().values('id', 'country', 'count', 'timestamp')
-        dead = DeadData.objects.all().values('id', 'country', 'count',
+        conf = ConfirmedData.objects.all().values('country', 'count', 'timestamp')
+        dead = DeadData.objects.all().values('country', 'count',
                                              'timestamp')
-        recovered = RecoveredData.objects.all().values('id','country', 'count', 'timestamp')
+        recovered = RecoveredData.objects.all().values('country', 'count', 'timestamp')
+
+        states_data = CovidData.objects.all().values(
+            'country', 'state', 'deaths', 'new_deaths', 'total_cases',
+            'new_cases', 'timestamp'
+        )
 
         last_updated = None
         try:
-            last_updated = ConfirmedData.objects.latest(
+            last_updated = ImportsUpdate.objects.latest(
                 'created_at').created_at
-            # sp_tz = pytz.timezone('America/Sao_Paulo')
-            # last_updated = sp_tz.localize(last_updated)
-
         except ConfirmedData.DoesNotExist:
             print('Empty database')
 
         df_conf = pd.DataFrame.from_records(conf, index='timestamp')
         df_dead = pd.DataFrame.from_records(dead, index='timestamp')
         df_recovered = pd.DataFrame.from_records(recovered, index='timestamp')
-
-        df_conf.drop(['id'], axis=1, inplace=True)
-
-        # plot = plotlinechart(df_conf, ['Brazil', 'Italy'], 'Confirmados')
+        df_br_states = pd.DataFrame.from_records(states_data, index='timestamp')
 
         lista_paises = ['Australia', 'Iran', 'Italy', 'Japan', 'Korea, South',
                         'Spain', 'United Kingdom', 'US', 'Netherlands',
@@ -97,9 +97,9 @@ class Home(TemplateView):
 
         plot_5 = plot_curva_log_confirmados_mundo(df_plot5,lista_paises)
 
-        df_plot6 = curva_log_confirmados_brasil(0,0)
+        df_plot6 = curva_log_confirmados_brasil(df_br_states, [])
 
-        plot_6 = plot_curva_log_confirmados_brasil(df_plot6,0)
+        plot_6 = plot_curva_log_confirmados_brasil(df_plot6, [])
 
         dados_graf_7 = triple_graph(df_conf, df_dead, df_recovered)
 
